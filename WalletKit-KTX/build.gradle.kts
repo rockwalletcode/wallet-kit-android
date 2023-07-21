@@ -1,0 +1,20 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    kotlin("jvm") version "1.5.0"
+}
+
+val deps: Map<*, *> by rootProject.extra
+
+kotlin {
+    dependencies {
+        api(project(":WalletKit"))
+        implementation(deps["coroutinesCore"]!!)
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
