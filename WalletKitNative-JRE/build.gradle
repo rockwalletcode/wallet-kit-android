@@ -1,6 +1,6 @@
 apply plugin: 'c'
 apply plugin: 'java-library'
-//apply from: '../gradle/publish.gradle'
+apply from: '../gradle/publish.gradle'
 
 import java.nio.file.Paths
 
