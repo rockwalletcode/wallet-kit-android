@@ -46,7 +46,7 @@ static def jnaResourceFromGradle(os, arch) {
 }
 
 task updateWalletKitCLibrary(type: Exec) {
-    println "Updating wallet-kit-core C Library..."
+/*    println "Updating wallet-kit-core C Library..."
     outputs.upToDateWhen { false }
     String repoUrl = 'https://github.com/rockwalletcode/wallet-kit-core.git'
     String branch = 'main'
@@ -77,7 +77,7 @@ task updateWalletKitCLibrary(type: Exec) {
         }
 
         println 'Local wallet-kit-core updated.'
-    }
+    }*/
 }
 
 model {
