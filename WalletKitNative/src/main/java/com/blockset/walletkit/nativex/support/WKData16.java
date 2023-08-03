@@ -12,7 +12,6 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class WKData16 extends Structure {
@@ -24,10 +23,10 @@ public class WKData16 extends Structure {
     }
 
     protected List<String> getFieldOrder() {
-        return Collections.singletonList("u8");
+        return Arrays.asList("u8");
     }
 
-    public WKData16(byte[] u8) {
+    public WKData16(byte u8[]) {
         super();
         if ((u8.length != this.u8.length)) {
             throw new IllegalArgumentException("Wrong array size!");

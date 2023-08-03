@@ -15,7 +15,6 @@ import com.sun.jna.Structure;
 import com.sun.jna.Union;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class WKSyncStoppedReason extends Structure {
@@ -36,7 +35,7 @@ public class WKSyncStoppedReason extends Structure {
             }
 
             protected List<String> getFieldOrder() {
-                return Collections.singletonList("errnum");
+                return Arrays.asList("errnum");
             }
 
             public posix_struct(int errnum) {

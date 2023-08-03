@@ -179,7 +179,7 @@ public class BlocksetBlock implements Block {
     @Override
     @JsonIgnore
     public List<Transaction> getTransactions() {
-        return embedded == null ? Collections.emptyList() : new ArrayList<>(embedded.transactions);
+        return embedded == null ? Collections.emptyList() : new ArrayList<Transaction>(embedded.transactions);
     }
 
     @Override

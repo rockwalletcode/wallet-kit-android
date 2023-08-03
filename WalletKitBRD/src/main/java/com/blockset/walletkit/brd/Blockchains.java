@@ -11,6 +11,7 @@ package com.blockset.walletkit.brd;
 import java.util.List;
 import java.util.Locale;
 
+import com.blockset.walletkit.SystemClient.CurrencyDenomination;
 import com.blockset.walletkit.brd.systemclient.BlocksetCurrencyDenomination;
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.UnsignedInteger;

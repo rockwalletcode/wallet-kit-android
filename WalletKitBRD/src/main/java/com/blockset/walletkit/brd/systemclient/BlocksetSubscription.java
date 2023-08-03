@@ -76,7 +76,7 @@ public class BlocksetSubscription implements Subscription {
     @Override
     @JsonIgnore
     public List<SubscriptionCurrency> getCurrencies() {
-        return new ArrayList<>(getBlocksetCurrencies());
+        return new ArrayList<SubscriptionCurrency>(getBlocksetCurrencies());
     }
 
     @JsonProperty("currencies")

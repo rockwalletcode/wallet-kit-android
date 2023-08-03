@@ -11,12 +11,13 @@ package com.blockset.walletkit;
 
 import androidx.annotation.Nullable;
 
-import com.blockset.walletkit.errors.TransferSubmitError;
+
 import com.google.common.base.Optional;
 
 import java.util.Objects;
 
 public final class TransferState {
+    public enum Type { CREATED, SIGNED, SUBMITTED, PENDING, INCLUDED, FAILED, DELETED, AUTHENTICATOR, EMAIL }
 
     // create constant values, where possible
     private static final TransferState CREATED_STATE = new TransferState(Type.CREATED, null, null);
@@ -62,8 +63,6 @@ public final class TransferState {
     public static TransferState EMAIL() {
         return EMAIL_STATE;
     }
-
-    public enum Type { CREATED, SIGNED, SUBMITTED, PENDING, INCLUDED, FAILED, DELETED, AUTHENTICATOR, EMAIL }
 
     private final Type type;
 

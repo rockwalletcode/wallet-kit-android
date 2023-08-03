@@ -239,7 +239,7 @@ public class BlocksetTransaction implements Transaction {
     @Override
     @JsonIgnore
     public List<Transfer> getTransfers() {
-        return embedded == null ? Collections.emptyList() : new ArrayList<>(embedded.transfers);
+        return embedded == null ? Collections.emptyList() : new ArrayList<Transfer>(embedded.transfers);
     }
 
     @Override
