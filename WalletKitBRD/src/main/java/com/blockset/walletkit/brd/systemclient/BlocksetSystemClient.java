@@ -92,7 +92,7 @@ public class BlocksetSystemClient implements SystemClient {
                                               @Nullable String bdbBaseURL) {
         DataTask brdDataTask = (cli, request, callback) -> {
             Request decoratedRequest = request.newBuilder()
-                    .header("Authorization", "Bearer " + bdbAuthToken)
+                    .header("Authorization", bdbAuthToken)
                     .build();
             cli.newCall(decoratedRequest).enqueue(callback);
         };

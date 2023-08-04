@@ -145,9 +145,9 @@ public class TransferCreateSendActivity extends AppCompatActivity {
             }
         });
 
-        ArrayAdapter<NetworkFee> feeAdapter = new ArrayAdapter<>(
-            this, android.R.layout.simple_spinner_item, allFees.toArray(new NetworkFee[0])
-        );
+        ArrayAdapter<NetworkFee> feeAdapter = new ArrayAdapter(this,
+                                                                android.R.layout.simple_spinner_item,
+                                                                allFees.toArray());
         feeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         availableFeesView.setAdapter(feeAdapter);
         availableFeesView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

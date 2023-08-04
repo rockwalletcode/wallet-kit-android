@@ -1,17 +1,17 @@
 
 {
   "blockset": {
-    "baseURL": "https://api.blockset.com",
-    "token":   "<blockset client access token>"
+    "baseURL": "https://api.dev.rockwallet.net",
+    "token":   "CLIENT_ACCESS_TOKEN"
   },
 
   "accounts": [
           {
             "identifier": "ginger",
             "paperKey":   "ginger settle marine tissue robot crane night number ramp coast roast critic",
-            "timestamp":  "2018-01-01",
-            "network":    "testnet",
-            "content":    "BTC, BCH, ETH"
+            "timestamp":  "2023-08-01",
+            "network":    "mainnet",
+            "content":    "BTC, BSV, BCH, ETH"
           },
 
           {

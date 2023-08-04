@@ -43,6 +43,7 @@ import com.blockset.walletkit.PaymentProtocolRequestType;
 import com.blockset.walletkit.System;
 import com.blockset.walletkit.Transfer;
 import com.blockset.walletkit.TransferConfirmation;
+import com.blockset.walletkit.TransferIncludeStatus;
 import com.blockset.walletkit.TransferState;
 import com.blockset.walletkit.Wallet;
 import com.blockset.walletkit.WalletManager;
@@ -91,9 +92,10 @@ public class TransferListActivity extends AppCompatActivity implements DefaultSy
 
     private Wallet wallet;
     private boolean isBitcoin;
+    private boolean isEthereum;
     private Adapter transferAdapter;
     private ClipboardManager clipboardManager;
-    private final ArrayList<PaymentProtocolRequestType> availablePaymentProtocols = new ArrayList<>();
+    private ArrayList<PaymentProtocolRequestType> availablePaymentProtocols = new ArrayList();
 
     void setActionConditionalOnNetwork(Button button, List<NetworkType> netTypes, View.OnClickListener clicker) {
         if (netTypes.contains(wallet.getWalletManager().getNetwork().getType()))
@@ -119,6 +121,7 @@ public class TransferListActivity extends AppCompatActivity implements DefaultSy
         String currencyCode = wallet.getCurrency().getCode().toLowerCase();
         NetworkType networkType = net.getType();
         isBitcoin = NetworkType.BTC == networkType || NetworkType.BCH == networkType;
+        isEthereum = NetworkType.ETH == networkType;
         clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         // Send currency must be contingent on available funds
@@ -143,19 +146,31 @@ public class TransferListActivity extends AppCompatActivity implements DefaultSy
             payView.setEnabled(false);
 
         Button sweepView = findViewById(R.id.sweep_view);
-        setActionConditionalOnNetwork(sweepView, Arrays.asList(NetworkType.BTC, NetworkType.BCH), v ->
-                TransferCreateSweepActivity.start(TransferListActivity.this, wallet)
-        );
+        setActionConditionalOnNetwork(sweepView, Arrays.asList(NetworkType.BTC, NetworkType.BCH), new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                TransferCreateSweepActivity.start(TransferListActivity.this, wallet);
+            }
+        });
 
         Button delegateView = findViewById(R.id.delegate_view);
-        setActionConditionalOnNetwork(delegateView, Collections.singletonList(NetworkType.XTZ), v ->
-                TransferCreateDelegateActivity.start(TransferListActivity.this, wallet)
-        );
+        setActionConditionalOnNetwork(delegateView, Arrays.asList(NetworkType.XTZ), new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                TransferCreateDelegateActivity.start(TransferListActivity.this, wallet);
+            }
+        });
 
         Button exportablePaperView = findViewById(R.id.exportablepaper_view);
-        setActionConditionalOnNetwork(exportablePaperView, Collections.singletonList(NetworkType.BTC), v ->
-                TransferCreateExportablePaperActivity.start(TransferListActivity.this, wallet)
-        );
+        setActionConditionalOnNetwork(exportablePaperView, Arrays.asList(NetworkType.BTC), new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                TransferCreateExportablePaperActivity.start(TransferListActivity.this, wallet);
+            }
+        });
 
         RecyclerView transfersView = findViewById(R.id.transfer_recycler_view);
         transfersView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
@@ -493,7 +508,10 @@ public class TransferListActivity extends AppCompatActivity implements DefaultSy
             this.stateText = Suppliers.memoize(() -> {
                 String text = String.format("State: %s", state());
                 return confirmation().transform((c) -> text +
-                        (c.getSuccess() ? "" : String.format(" (%s)", c.getError().or("<err>"))))
+                        (c.getStatus().type == TransferIncludeStatus.Type.SUCCESS
+                                ? ""
+                                : String.format(" %s: (%s)",
+                                c.getStatus().type, c.getStatus().details)))
                         .or(text);
             });
             this.dateText = Suppliers.memoize(() -> confirmation()

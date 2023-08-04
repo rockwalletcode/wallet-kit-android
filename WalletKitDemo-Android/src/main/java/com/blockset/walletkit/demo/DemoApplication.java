@@ -73,8 +73,8 @@ public class DemoApplication extends Application {
     private Set<String> registerCurrencyCodes;
     private AtomicBoolean runOnce = new AtomicBoolean(false);
 
-    public static void initialize(Activity launchingActivity) {
-        instance.initFromLaunchIntent(launchingActivity.getIntent());
+    public static int initialize(Activity launchingActivity) {
+        return instance.initFromLaunchIntent(launchingActivity.getIntent());
     }
 
     public static Context getContext() {
@@ -112,7 +112,8 @@ public class DemoApplication extends Application {
         StrictMode.enableDefaults();
     }
 
-    private void initFromLaunchIntent(Intent intent) {
+    private int initFromLaunchIntent(Intent intent) {
+        int accountIdx = -1;
         if (!runOnce.getAndSet(true)) {
             Logging.initialize(Level.FINE);
 
@@ -166,6 +167,7 @@ public class DemoApplication extends Application {
                 registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
             }
         }
+        return accountIdx;
     }
 
     public static void setAccount(AccountSpecification accountSpec) {
@@ -180,7 +182,7 @@ public class DemoApplication extends Application {
         paperKey = accountSpec.getPaperKey().getBytes(StandardCharsets.UTF_8);
 
         // Store locally to permit wipe
-        this.isMainnet = accountSpec.getNetwork().equals("mainnet");
+        this.isMainnet = accountSpec.getNetwork().equals("mainnet") ? true : false;;
 
         Log.log(Level.FINE, String.format("Account PaperKey:  %s", accountSpec.getPaperKey()));
         Log.log(Level.FINE, String.format("Account Timestamp: %s", accountSpec.getTimestamp()));
@@ -194,9 +196,8 @@ public class DemoApplication extends Application {
                                            this.isMainnet).get();
 
 
-        /* "zla", "adt" */
-        registerCurrencyCodes = isMainnet ? new HashSet<>(Collections.emptyList()) :
-                new HashSet<>(Arrays.asList("brd", "tst"));
+        registerCurrencyCodes = isMainnet ? new HashSet(Arrays.asList(/* "zla", "adt" */)) :
+                                            new HashSet(Arrays.asList("brd", "tst"));
 
         systemListener = new DispatchingSystemListener();
         systemListener.addSystemListener(new DemoSystemListener(currencyCodesToMode,

@@ -87,13 +87,17 @@ public class TransferCreateDelegateActivity extends AppCompatActivity {
         }
 
         enable = findViewById(R.id.delegation_enable_view);
-        enable.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!isChecked) {
-                address.setText(wallet.getTarget().toString());
-                estimateFee();
-            } else {
-                submit.setEnabled(false);
-                address.setText("");
+        enable.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!isChecked) {
+                    address.setText(wallet.getTarget().toString());
+                    estimateFee();
+                } else {
+                    submit.setEnabled(false);
+                    address.setText("");
+                }
             }
         });
 
@@ -121,10 +125,12 @@ public class TransferCreateDelegateActivity extends AppCompatActivity {
     }
 
     private Set<TransferAttribute> getTransferAttributes() {
-        HashSet<TransferAttribute> delegateAttrs = new HashSet<>();
+        HashSet<TransferAttribute> delegateAttrs = new HashSet<TransferAttribute>();
         Set<TransferAttribute> attrs = (Set<TransferAttribute>)wallet.getTransferAttributes();
+        Iterator<TransferAttribute> i = attrs.iterator();
 
-        for (TransferAttribute attr : attrs) {
+        while (i.hasNext()) {
+            TransferAttribute attr = i.next();
             if (attr.getKey().equals(DELEGATION_OP)) {
                 attr.setValue("1");
                 delegateAttrs.add(attr);
@@ -154,10 +160,11 @@ public class TransferCreateDelegateActivity extends AppCompatActivity {
         @Override
         public void handleData(TransferFeeBasis data) {
             feeBasis = data;
-            runOnUiThread(() -> {
-                submit.setEnabled(true);
-                fee.setText(data.getFee().toString());
-            });
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    submit.setEnabled(true);
+                    fee.setText(data.getFee().toString());
+                }});
         }
 
         @Override
@@ -226,7 +233,9 @@ public class TransferCreateDelegateActivity extends AppCompatActivity {
                     .setTitle("Delegation for " + wallet.getName())
                     .setMessage("Are you sure?")
                     .setNegativeButton("Cancel", (d,w) -> {})
-                    .setPositiveButton("Ok", (d,w) -> submitDelegationTransfer())
+                    .setPositiveButton("Ok", (d,w) -> {
+                        submitDelegationTransfer();
+                    })
                     .show();
         }
     }
