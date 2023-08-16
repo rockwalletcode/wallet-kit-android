@@ -121,9 +121,11 @@ public class WKSystemEvent extends Structure {
     @Override
     public void read() {
         super.read();
-        if (type() == WKSystemEventType.CHANGED) {
-            u.setType(u_union.state_struct.class);
-            u.read();
+        switch (type()) {
+            case CHANGED:
+                u.setType(u_union.state_struct.class);
+                u.read();
+                break;
         }
     }
 

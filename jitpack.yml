@@ -1,4 +1,6 @@
+jdk:
+  - openjdk11
 before_install:
-  - yes | sdkmanager "cmake;3.18.1"
+  - yes | sdkmanager "cmake;3.26.4" "ndk;21.4.7075529"
   - sdk install java 11.0.10-open
   - sdk use java 11.0.10-open

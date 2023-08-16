@@ -39,7 +39,7 @@ public class WKClientCurrencyBundle extends PointerType {
                         address,
                         verified,
                         new SizeT(denomniations.size()),
-                        denomniations.toArray(new WKClientCurrencyDenominationBundle[0])));
+                        denomniations.toArray(new WKClientCurrencyDenominationBundle[denomniations.size()])));
     }
 
     public void release () {

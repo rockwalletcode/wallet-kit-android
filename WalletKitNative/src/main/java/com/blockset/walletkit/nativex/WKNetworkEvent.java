@@ -12,7 +12,6 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class WKNetworkEvent extends Structure {
@@ -28,7 +27,7 @@ public class WKNetworkEvent extends Structure {
     }
 
     protected List<String> getFieldOrder() {
-        return Collections.singletonList("typeEnum");
+        return Arrays.asList("typeEnum");
     }
 
     public WKNetworkEvent(int type) {

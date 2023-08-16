@@ -12,6 +12,9 @@ import androidx.annotation.Nullable;
 import com.google.common.base.Optional;
 import com.google.common.primitives.UnsignedInteger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class BlockBlob {
 
     public static class Btc {

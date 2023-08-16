@@ -321,7 +321,9 @@ public class TransferCreatePaymentActivity extends AppCompatActivity {
                     .setTitle("Payment Details")
                     .setMessage(Html.fromHtml(builder.toString()))
                     .setNegativeButton("Cancel", (dialog, which) -> {})
-                    .setPositiveButton("Continue", (dialog, which) -> continuePayment(request, feeBasis))
+                    .setPositiveButton("Continue", (dialog, which) -> {
+                        continuePayment(request, feeBasis);
+                    })
                     .show());
         }
     }

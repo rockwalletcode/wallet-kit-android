@@ -64,7 +64,7 @@ public class BlocksetSubscriptionCurrency implements SubscriptionCurrency {
     @Override
     @JsonIgnore
     public List<SubscriptionEvent> getEvents() {
-        return new ArrayList<>(getBlocksetEvents());
+        return new ArrayList<SubscriptionEvent>(getBlocksetEvents());
     }
 
     @JsonProperty("events")

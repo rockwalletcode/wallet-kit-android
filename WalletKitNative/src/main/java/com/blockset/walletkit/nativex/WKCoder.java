@@ -17,6 +17,8 @@ import com.sun.jna.PointerType;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import static com.google.common.base.Preconditions.checkState;
+
 public class WKCoder extends PointerType {
 
     // these must mirror BRCryptoCoderType's enum values

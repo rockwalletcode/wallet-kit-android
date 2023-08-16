@@ -27,6 +27,7 @@ import com.blockset.walletkit.System;
 import com.blockset.walletkit.Transfer;
 import com.blockset.walletkit.TransferAttribute;
 import com.blockset.walletkit.TransferConfirmation;
+import com.blockset.walletkit.TransferIncludeStatus;
 import com.blockset.walletkit.TransferState;
 import com.blockset.walletkit.Wallet;
 import com.blockset.walletkit.WalletManager;
@@ -264,20 +265,22 @@ public class TransferDetailsActivity extends AppCompatActivity implements Defaul
             this.confirmationCountVisible = conf.isPresent();
             this.stateText = conf.transform((c) ->
                     state.toString() +
-                            (c.getSuccess()
+                            (c.getStatus().type == TransferIncludeStatus.Type.SUCCESS
                                     ? ""
-                                    : String.format (" (%s)", c.getError().or("err"))))
-                    .or(state.toString());
+                                    : String.format(" %s: (%s)",
+                                    c.getStatus().type, c.getStatus().details)))
+                   .or(state.toString());
+
             this.directionText = transfer.getDirection().toString();
 
-            StringBuilder sb = new StringBuilder();
+            StringBuffer sb = new StringBuffer();
             String prefix = "";
             for (TransferAttribute a : transfer.getAttributes()) {
                 sb.append(prefix);
                 sb.append(String.format("%s(%s):%s",
-                        a.getKey(),
-                        (a.isRequired() ? "R" : "O"),
-                        a.getValue().or("")));
+                        ((TransferAttribute) a).getKey(),
+                        (((TransferAttribute) a).isRequired() ? "R" : "O"),
+                        ((TransferAttribute) a).getValue().or("")));
                 prefix = ", ";
             }
             this.attributesText = sb.toString();

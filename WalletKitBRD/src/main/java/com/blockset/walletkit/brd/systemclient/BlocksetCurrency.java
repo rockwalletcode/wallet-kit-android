@@ -157,7 +157,7 @@ public class BlocksetCurrency implements Currency {
     @Override
     @JsonIgnore
     public List<CurrencyDenomination> getDenominations() {
-        return new ArrayList<>(getBlocksetDenominations());
+        return new ArrayList<CurrencyDenomination>(getBlocksetDenominations());
     }
 
 

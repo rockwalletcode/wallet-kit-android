@@ -1,11 +1,6 @@
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
 
 def isAndroidLibrary = plugins.hasPlugin('com.android.library')
-if (isAndroidLibrary) {
-    plugins.apply('digital.wup.android-maven-publish')
-} else {
-    plugins.apply('maven-publish')
-}
 
 task sourcesJar(type: Jar) {
     classifier 'sources'
@@ -21,32 +16,21 @@ task sourcesJar(type: Jar) {
 publishing {
     publications {
         maven(MavenPublication) {
+            groupId 'com.rockwalletcode'
+            artifactId project.name
+            version project.wkVersion
             artifact sourcesJar
+
             if (isAndroidLibrary) {
-                from components.android
+                artifact("$buildDir/outputs/aar/${project.name}-release.aar")
             } else {
                 from components.findByName("kotlin") ?: components.java
             }
         }
     }
-}
-
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-    publications = ['maven']
-    pkg {
-        repo = 'walletkit-java'
-        name = project.name
-        userOrg = 'brd'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/blockset-corp/walletkit-java.git'
-        githubRepo = 'blockset-corp/walletkit-java'
-        githubReleaseNotesFile = 'README.md'
-        version {
-            name = project.property('version')
-            released = new Date()
-            vcsTag = project.property('version')
+    repositories {
+        maven {
+            url = uri(System.getProperty('user.home') + '/.m2/repository')
         }
     }
 }

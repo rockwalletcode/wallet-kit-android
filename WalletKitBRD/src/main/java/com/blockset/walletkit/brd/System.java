@@ -9,7 +9,7 @@ package com.blockset.walletkit.brd;
 
 import com.blockset.walletkit.Key;
 import com.blockset.walletkit.brd.systemclient.BlocksetTransaction;
-import com.blockset.walletkit.brd.systemclient.QueryResponseError;
+import com.blockset.walletkit.nativex.WKClientError;
 import com.blockset.walletkit.nativex.WKFeeBasis;
 import com.blockset.walletkit.nativex.cleaner.ReferenceCleaner;
 import com.blockset.walletkit.nativex.WKClient;
@@ -45,8 +45,7 @@ import com.blockset.walletkit.WalletManagerSyncDepth;
 import com.blockset.walletkit.WalletManagerSyncStoppedReason;
 import com.blockset.walletkit.WalletState;
 import com.blockset.walletkit.SystemClient;
-import com.blockset.walletkit.errors.QueryError;
-import com.blockset.walletkit.errors.QueryNoDataError;
+import com.blockset.walletkit.errors.SystemClientError;
 import com.blockset.walletkit.SystemClient.Blockchain;
 import com.blockset.walletkit.SystemClient.BlockchainFee;
 import com.blockset.walletkit.SystemClient.CurrencyDenomination;
@@ -120,6 +119,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -132,6 +132,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -362,7 +363,13 @@ final class System implements com.blockset.walletkit.System {
         /** A Function to create Extraction from System
          *
          */
-        private static final Function<System, Extraction> toSystemExtraction = Extraction::new;
+        private static final Function<System, Extraction> toSystemExtraction =
+            new Function<System, Extraction>() {
+                @Override
+                public Extraction apply(final System system) {
+                    return new Extraction(system);
+                }
+            };
 
         /** Working with system 'context', create an extraction involving the System.
          *
@@ -606,7 +613,7 @@ final class System implements com.blockset.walletkit.System {
 
     @Override
     public void updateNetworkFees(@Nullable CompletionHandler<List<com.blockset.walletkit.Network>, NetworkFeeUpdateError> handler) {
-        query.getBlockchains(isMainnet, new CompletionHandler<List<Blockchain>, QueryError>() {
+        query.getBlockchains(isMainnet, new CompletionHandler<List<Blockchain>, SystemClientError>() {
             @Override
             public void handleData(List<Blockchain> blockchainModels) {
                 Map<String, Network> networksByUuid = new HashMap<>();
@@ -654,7 +661,7 @@ final class System implements com.blockset.walletkit.System {
             }
 
             @Override
-            public void handleError(QueryError error) {
+            public void handleError(SystemClientError error) {
                 // On an error, just skip out; we'll query again later, presumably
                 if (null != handler) handler.handleError(new NetworkFeeUpdateFeesUnavailableError());
             }
@@ -663,7 +670,7 @@ final class System implements com.blockset.walletkit.System {
 
     @Override
     public <T extends com.blockset.walletkit.Network> void updateCurrencies(@Nullable CompletionHandler<List<T>, CurrencyUpdateError> handler) {
-        query.getCurrencies(null, isMainnet, new CompletionHandler<List<SystemClient.Currency>, QueryError>() {
+        query.getCurrencies(null, isMainnet, new CompletionHandler<List<SystemClient.Currency>, SystemClientError>() {
             @Override
             public void handleData(List<SystemClient.Currency> currencyModels) {
                 List<WKClientCurrencyBundle> bundles = new ArrayList<>();
@@ -689,7 +696,7 @@ final class System implements com.blockset.walletkit.System {
                             denominationBundles));
                 }
 
-                getCoreBRCryptoSystem().announceCurrencies(bundles);
+                getCoreBRCryptoSystem().announceCurrenciesSuccess(bundles);
                 for (WKClientCurrencyBundle bundle : bundles) bundle.release();
 
                 if (null != handler) {
@@ -698,7 +705,7 @@ final class System implements com.blockset.walletkit.System {
             }
 
             @Override
-            public void handleError(QueryError error) {
+            public void handleError(SystemClientError error) {
                 if (null != handler)
                     handler.handleError(new CurrencyUpdateCurrenciesUnavailableError());
             }
@@ -1334,7 +1341,7 @@ final class System implements com.blockset.walletkit.System {
                 WalletManager manager  = optExtraction.get().manager;
 
                 system.query.getBlockchain(manager.getNetwork().getUids(),
-                        new CompletionHandler<Blockchain, QueryError>() {
+                        new CompletionHandler<Blockchain, SystemClientError>() {
 
                             @Override
                             public void handleData(Blockchain blockchain) {
@@ -1344,32 +1351,28 @@ final class System implements com.blockset.walletkit.System {
                                     UnsignedLong blockchainHeight = maybeBlockHeight.get();
                                     String verifiedBlockHash = maybeVerifiedBlockHash.get();
                                     Log.log(Level.FINE, String.format("BRCryptoCWMGetBlockNumberCallback: succeeded (%s, %s)", blockchainHeight, verifiedBlockHash));
-                                    manager.getCoreBRCryptoWalletManager().announceGetBlockNumber(callbackState,
-                                            true,
+                                    manager.getCoreBRCryptoWalletManager().announceGetBlockNumberSuccess(callbackState,
                                             blockchainHeight,
                                             verifiedBlockHash);
                                 } else {
                                     Log.log(Level.SEVERE, "BRCryptoCWMGetBlockNumberCallback: failed with missing block height");
-                                    manager.getCoreBRCryptoWalletManager().announceGetBlockNumber(callbackState,
-                                            false,
-                                            UnsignedLong.ZERO,
-                                            "");
+                                    manager.getCoreBRCryptoWalletManager().announceGetBlockNumberFailure(callbackState,
+                                            new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetBlockNumberCallback: failed with missing block height"));
                                 }
                             }
 
                             @Override
-                            public void handleError(QueryError error) {
-                                Log.log(Level.SEVERE, "BRCryptoCWMGetBlockNumberCallback: failed", error);
-                                manager.getCoreBRCryptoWalletManager().announceGetBlockNumber(callbackState,
-                                        false,
-                                        UnsignedLong.ZERO,
-                                        "");
-                            }
+                            public void handleError(SystemClientError error) {
+                                Log.log(Level.SEVERE, "BRCryptoCWMGetBlockNumberCallback: failed: ", error);
+                                manager.getCoreBRCryptoWalletManager().announceGetBlockNumberFailure(callbackState,
+                                        Utilities.systemClientErrorToCrypto(error));
+                             }
                         });
 
             } catch (RuntimeException e) {
                 Log.log(Level.SEVERE, e.getMessage());
-                coreWalletManager.announceGetBlockNumber(callbackState, false, UnsignedLong.ZERO, "");
+                coreWalletManager.announceGetBlockNumberFailure(callbackState,
+                        new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetBlockNumberCallback: failed with runtime exception: " + e.getMessage()));
             } finally {
                 coreWalletManager.give();
             }
@@ -1393,7 +1396,7 @@ final class System implements com.blockset.walletkit.System {
                 WalletManager manager  = optExtraction.get().manager;
 
                 system.query.getBlockchain(manager.getNetwork().getUids(),
-                        new CompletionHandler<Blockchain, QueryError>() {
+                        new CompletionHandler<Blockchain, SystemClientError>() {
 
                             @Override
                             public void handleData(Blockchain blockchain) {
@@ -1403,32 +1406,28 @@ final class System implements com.blockset.walletkit.System {
                                     UnsignedLong blockchainHeight = maybeBlockHeight.get();
                                     String verifiedBlockHash = maybeVerifiedBlockHash.get();
                                     Log.log(Level.FINE, String.format("BRCryptoCWMGetBlockNumberCallback: succeeded (%s, %s)", blockchainHeight, verifiedBlockHash));
-                                    manager.getCoreBRCryptoWalletManager().announceGetBlockNumberReceiveAddressSync(callbackState,
-                                            true,
+                                    manager.getCoreBRCryptoWalletManager().announceGetBlockNumberReceiveAddressSyncSuccess(callbackState,
                                             blockchainHeight,
                                             verifiedBlockHash);
                                 } else {
                                     Log.log(Level.SEVERE, "BRCryptoCWMGetBlockNumberCallback: failed with missing block height");
-                                    manager.getCoreBRCryptoWalletManager().announceGetBlockNumberReceiveAddressSync(callbackState,
-                                            false,
-                                            UnsignedLong.ZERO,
-                                            "");
+                                    manager.getCoreBRCryptoWalletManager().announceGetBlockNumberReceiveAddressSyncFailure(callbackState,
+                                            new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetBlockNumberCallback: failed with missing block height"));
                                 }
                             }
 
                             @Override
-                            public void handleError(QueryError error) {
+                            public void handleError(SystemClientError error) {
                                 Log.log(Level.SEVERE, "BRCryptoCWMGetBlockNumberCallback: failed", error);
-                                manager.getCoreBRCryptoWalletManager().announceGetBlockNumberReceiveAddressSync(callbackState,
-                                        false,
-                                        UnsignedLong.ZERO,
-                                        "");
+                                manager.getCoreBRCryptoWalletManager().announceGetBlockNumberReceiveAddressSyncFailure(callbackState,
+                                        Utilities.systemClientErrorToCrypto(error));
                             }
                         });
 
             } catch (RuntimeException e) {
                 Log.log(Level.SEVERE, e.getMessage());
-                coreWalletManager.announceGetBlockNumberReceiveAddressSync(callbackState, false, UnsignedLong.ZERO, "");
+                coreWalletManager.announceGetBlockNumberReceiveAddressSyncFailure(callbackState, new WKClientError(WKClientError.Type.BAD_RESPONSE,
+                        "BRCryptoCWMGetBlockNumberCallback: failed with runtime exception: " + e.getMessage()));
             } finally {
                 coreWalletManager.give();
             }
@@ -1536,7 +1535,7 @@ final class System implements com.blockset.walletkit.System {
                         false,
                         false,
                         null,
-                        new CompletionHandler<List<Transaction>, QueryError>() {
+                        new CompletionHandler<List<Transaction>, SystemClientError>() {
                             @Override
                             public void handleData(List<Transaction> transactions) {
                                 boolean success = false;
@@ -1545,32 +1544,29 @@ final class System implements com.blockset.walletkit.System {
                                 // Sort and filter `transactions` - will be ascending, duplicate free.
                                 canonicalizeTransactions(transactions);
 
-                                List<WKClientTransactionBundle> bundles = new ArrayList<>();
-                                for (Transaction transaction : transactions) {
-                                    makeTransactionBundle(transaction)
-                                            .transform(b -> { bundles.add (b); return true; });
-                                }
-                                manager.getCoreBRCryptoWalletManager().announceTransactions(callbackState,
-                                        true,
-                                        bundles);
+                                List<WKClientTransactionBundle> bundles = transactions.stream()
+                                        .map (t -> System.makeTransactionBundle(t).orNull())
+                                        .filter (Objects::nonNull)
+                                        .collect(Collectors.toList());
+
+                                manager.getCoreBRCryptoWalletManager().announceTransactionsSuccess(callbackState, bundles);
 
                                 success = true;
-                                Log.log(Level.FINE, "BRCryptoCWMGetTransactionsCallback: complete");
+                                Log.log(Level.FINE, "BRCryptoCWMGetTransactionsCallback: Complete");
                             }
 
                             @Override
-                            public void handleError(QueryError error) {
-                                Log.log(Level.SEVERE, "BRCryptoCWMGetTransactionsCallback received an error, completing with failure: ", error);
-                                manager.getCoreBRCryptoWalletManager().announceTransactions(callbackState,
-                                        false,
-                                        new ArrayList<>());
-
+                            public void handleError(SystemClientError error) {
+                                Log.log(Level.SEVERE, "BRCryptoCWMGetTransactionsCallback Error: ", error);
+                                manager.getCoreBRCryptoWalletManager().announceTransactionsFailure(callbackState,
+                                        Utilities.systemClientErrorToCrypto(error));
                             }
                         });
 
             } catch (RuntimeException e) {
                 Log.log(Level.SEVERE, e.getMessage());
-                coreWalletManager.announceTransactions(callbackState, false, new ArrayList<>());
+                coreWalletManager.announceTransactionsFailure(callbackState,
+                        new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetTransactionsCallback: Exception: " + e.getMessage()));
             } finally {
                 coreWalletManager.give();
             }
@@ -1609,7 +1605,7 @@ final class System implements com.blockset.walletkit.System {
                         false,
                         false,
                         null,
-                        new CompletionHandler<List<Transaction>, QueryError>() {
+                        new CompletionHandler<List<Transaction>, SystemClientError>() {
                             @Override
                             public void handleData(List<Transaction> transactions) {
                                 boolean success = false;
@@ -1623,8 +1619,7 @@ final class System implements com.blockset.walletkit.System {
                                     makeTransactionBundle(transaction)
                                             .transform(b -> { bundles.add (b); return true; });
                                 }
-                                manager.getCoreBRCryptoWalletManager().announceTransactionsReceiveAddressSync(callbackState,
-                                        true,
+                                manager.getCoreBRCryptoWalletManager().announceTransactionsReceiveAddressSyncSuccess(callbackState,
                                         bundles);
 
                                 success = true;
@@ -1632,18 +1627,18 @@ final class System implements com.blockset.walletkit.System {
                             }
 
                             @Override
-                            public void handleError(QueryError error) {
+                            public void handleError(SystemClientError error) {
                                 Log.log(Level.SEVERE, "BRCryptoCWMGetTransactionsCallback received an error, completing with failure: ", error);
-                                manager.getCoreBRCryptoWalletManager().announceTransactionsReceiveAddressSync(callbackState,
-                                        false,
-                                        new ArrayList<>());
 
+                                manager.getCoreBRCryptoWalletManager().announceTransactionsReceiveAddressSyncFailure(callbackState,
+                                        Utilities.systemClientErrorToCrypto(error));
                             }
                         });
 
             } catch (RuntimeException e) {
                 Log.log(Level.SEVERE, e.getMessage());
-                coreWalletManager.announceTransactionsReceiveAddressSync(callbackState, false, new ArrayList<>());
+                coreWalletManager.announceTransactionsReceiveAddressSyncFailure(callbackState,
+                        new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetTransactionsCallback: Exception: " + e.getMessage()));
             } finally {
                 coreWalletManager.give();
             }
@@ -1721,7 +1716,7 @@ final class System implements com.blockset.walletkit.System {
                         true,
                         false,
                         null,
-                        new CompletionHandler<List<Transaction>, QueryError>() {
+                        new CompletionHandler<List<Transaction>, SystemClientError>() {
                             @Override
                             public void handleData(List<Transaction> transactions) {
                                 boolean success = false;
@@ -1730,32 +1725,29 @@ final class System implements com.blockset.walletkit.System {
                                 // Sort and filter `transactions` - will be ascending, duplicate free.
                                 canonicalizeTransactions(transactions);
 
-                                List<WKClientTransferBundle> bundles = new ArrayList<>();
+                                List<WKClientTransferBundle> bundles = transactions.stream()
+                                        .flatMap(t -> makeTransferBundles(t, canonicalAddresses).stream())
+                                        .collect(Collectors.toList());
 
-                                for (Transaction transaction : transactions) {
-                                    bundles.addAll(makeTransferBundles(transaction, canonicalAddresses));
-                                }
-
-                                manager.getCoreBRCryptoWalletManager().announceTransfers(callbackState,
-                                        true,
-                                        bundles);
+                                manager.getCoreBRCryptoWalletManager().announceTransfersSuccess(callbackState, bundles);
 
                                 success = true;
                                 Log.log(Level.FINE, "BRCryptoCWMGetTransfersCallback : complete");
                             }
 
                             @Override
-                            public void handleError(QueryError error) {
+                            public void handleError(SystemClientError error) {
                                 Log.log(Level.SEVERE, "BRCryptoCWMGetTransfersCallback  received an error, completing with failure: ", error);
-                                manager.getCoreBRCryptoWalletManager().announceTransfers(callbackState,
-                                        false,
-                                        new ArrayList<>());
+                                manager.getCoreBRCryptoWalletManager().announceTransfersFailure(callbackState,
+                                        Utilities.systemClientErrorToCrypto(error));
                             }
                         });
 
             } catch (RuntimeException e) {
                 Log.log(Level.SEVERE, e.getMessage());
-                coreWalletManager.announceTransfers(callbackState, false, new ArrayList<>());
+                coreWalletManager.announceTransfersFailure(callbackState,
+                        new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetTransfersCallback: failed with runtime exception: " + e.getMessage()));
+
             } finally {
                 coreWalletManager.give();
             }
@@ -1784,20 +1776,23 @@ final class System implements com.blockset.walletkit.System {
                 WalletManager manager  = optExtraction.get().manager;
 
                 system.query.createTransaction(manager.getNetwork().getUids(), transaction, identifier, exchangeId, secondFactorCode, secondFactorBackup, isSweep,
-                        new CompletionHandler<TransactionIdentifier, QueryError>() {
+                        new CompletionHandler<TransactionIdentifier, SystemClientError>() {
                             @Override
                             public void handleData(TransactionIdentifier tid) {
                                 Log.log(Level.FINE, "BRCryptoCWMSubmitTransactionCallback: succeeded");
-                                manager.getCoreBRCryptoWalletManager().announceSubmitTransfer(callbackState,
+                                manager.getCoreBRCryptoWalletManager().announceSubmitTransferSuccess(callbackState,
                                         tid.getIdentifier(),
-                                        tid.getHash().orNull(),
-                                        true);
+                                        tid.getHash().orNull()
+                                        );
                             }
 
                             @Override
-                            public void handleError(QueryError error) {
+                            public void handleError(SystemClientError error) {
                                 Log.log(Level.SEVERE, "BRCryptoCWMSubmitTransactionCallback: failed", error);
 
+                                WKTransferSubmitErrorType errorType = WKTransferSubmitErrorType.UNKNOWN;
+                                // TODO(WK)
+                                /*
                                 WKTransferSubmitErrorType errorType = WKTransferSubmitErrorType.UNKNOWN;
 
                                 QueryResponseError errorResponse = (QueryResponseError) error;
@@ -1813,19 +1808,18 @@ final class System implements com.blockset.walletkit.System {
                                         errorType = WKTransferSubmitErrorType.AUTHENTICATOR;
                                     }
                                 }
-
-                                manager.getCoreBRCryptoWalletManager().announceSubmitTransfer(callbackState,
-                                        null,
-                                        null,
-                                        false,
-                                        errorType);
+                                */
+                                manager.getCoreBRCryptoWalletManager().announceSubmitTransferFailure(callbackState,
+                                        Utilities.systemClientErrorToCrypto(error));
                             }
                         });
 
 
             } catch (RuntimeException e) {
                 Log.log(Level.SEVERE, e.getMessage());
-                coreWalletManager.announceSubmitTransfer(callbackState, null, null, false);
+                coreWalletManager.announceSubmitTransferFailure(callbackState,
+                        new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetTransfersCallback: failed with runtime exception: " + e.getMessage()));
+
             } finally {
                 coreWalletManager.give();
             }
@@ -1850,20 +1844,20 @@ final class System implements com.blockset.walletkit.System {
 
                 system.query.estimateTransactionFee(manager.getNetwork().getUids(),
                         transaction,
-                        new CompletionHandler<TransactionFee, QueryError>() {
+                        new CompletionHandler<TransactionFee, SystemClientError>() {
                             @Override
                             public void handleData(TransactionFee fee) {
                                 Log.log(Level.FINE, "BRCryptoCWMEstimateTransactionFeeCallback: succeeded");
-                                manager.getCoreBRCryptoWalletManager().announceEstimateTransactionFee(callbackState,
-                                        true,
+                                manager.getCoreBRCryptoWalletManager().announceEstimateTransactionFeeSuccess(callbackState,
                                         fee.getCostUnits(),
                                         fee.getProperties());
                             }
 
                             @Override
-                            public void handleError(QueryError error) {
+                            public void handleError(SystemClientError error) {
                                 Log.log(Level.SEVERE, "BRCryptoCWMEstimateTransactionFeeCallback: failed ", error);
-
+                                // TODO(WK)
+                                /*
                                 QueryResponseError errorResponse = (QueryResponseError) error;
                                 Map<String, Object> jsonMap = errorResponse.getJson(); // Get json response
                                 String networkMessage = (String) jsonMap.get("network_message");
@@ -1879,15 +1873,19 @@ final class System implements com.blockset.walletkit.System {
                                     }
                                 }
                                 UnsignedLong requiredAmount = UnsignedLong.valueOf(requiredAmountString);
-                                manager.getCoreBRCryptoWalletManager().announceEstimateTransactionFee(callbackState,
+                                manager.getCoreBRCryptoWalletManager().announceEstimateTransactionFeeFailure(callbackState,
                                         false,
                                         requiredAmount,
-                                        new LinkedHashMap<>());
+                                        new LinkedHashMap<>());*/
+                                manager.getCoreBRCryptoWalletManager().announceEstimateTransactionFeeFailure(callbackState,
+                                        Utilities.systemClientErrorToCrypto(error));
                             }
                         });
             } catch (RuntimeException e) {
                 Log.log(Level.SEVERE, e.getMessage());
-                coreWalletManager.announceEstimateTransactionFee(callbackState, false, UnsignedLong.ZERO, new LinkedHashMap<>());
+                coreWalletManager.announceEstimateTransactionFeeFailure(callbackState,
+                        new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetTransfersCallback: failed with runtime exception: " + e.getMessage()));
+
             } finally {
                 coreWalletManager.give();
             }
@@ -2015,7 +2013,7 @@ final class System implements com.blockset.walletkit.System {
                             .get();
 
                     if (!publicKey.isPresent()) {
-                        accountInitializeReportError(new AccountInitializationQueryError(new QueryNoDataError()), handler);
+                        accountInitializeReportError(new AccountInitializationQueryError(new SystemClientError.BadRequest("No Public Key")), handler);
                         return;
                     }
 
@@ -2047,7 +2045,7 @@ final class System implements com.blockset.walletkit.System {
                                     if (serialization.isPresent()) {
                                         accountInitializeReportSuccess(serialization.get(), handler);
                                     } else {
-                                        accountInitializeReportError(new AccountInitializationQueryError(new QueryNoDataError()), handler);
+                                        accountInitializeReportError(new AccountInitializationQueryError(new SystemClientError.BadResponse("No Serialization")), handler);
                                     }
                                     break;
 
@@ -2059,7 +2057,7 @@ final class System implements com.blockset.walletkit.System {
                         }
 
                         @Override
-                        public void handleError(QueryError error) {
+                        public void handleError(SystemClientError error) {
                             accountInitializeReportError(new AccountInitializationQueryError(error), handler);
                         }
                     };
@@ -2095,7 +2093,7 @@ final class System implements com.blockset.walletkit.System {
         handler.handleData(data);
     }
 
-    private abstract static class HederaAccountCompletionHandler implements CompletionHandler<List<HederaAccount>, QueryError> {
+    private abstract class HederaAccountCompletionHandler implements CompletionHandler<List<HederaAccount>, SystemClientError> {
         boolean create = true;
     }
 }

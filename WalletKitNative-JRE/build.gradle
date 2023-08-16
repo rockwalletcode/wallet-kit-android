@@ -1,6 +1,6 @@
 apply plugin: 'c'
 apply plugin: 'java-library'
-//apply from: '../gradle/publish.gradle'
+apply from: '../gradle/publish.gradle'
 
 import java.nio.file.Paths
 
@@ -8,8 +8,8 @@ def projectRoot = projectDir.absolutePath
 def projectResMainDir = Paths.get(projectRoot, 'build', 'native', 'cryptoMain').toAbsolutePath().toString()
 def projectResTestDir = Paths.get(projectRoot, 'build', 'native', 'cryptoTest').toAbsolutePath().toString()
 
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 static def jnaOsFromGradle(os) {
     if (os == "osx") {
@@ -46,7 +46,7 @@ static def jnaResourceFromGradle(os, arch) {
 }
 
 task updateWalletKitCLibrary(type: Exec) {
-    println "Updating wallet-kit-core C Library..."
+/*    println "Updating wallet-kit-core C Library..."
     outputs.upToDateWhen { false }
     String repoUrl = 'https://github.com/rockwalletcode/wallet-kit-core.git'
     String branch = 'main'
@@ -77,7 +77,7 @@ task updateWalletKitCLibrary(type: Exec) {
         }
 
         println 'Local wallet-kit-core updated.'
-    }
+    }*/
 }
 
 model {
@@ -179,8 +179,7 @@ model {
                     lib library: 'sqlite3', linkage: 'static'
                     lib library: 'ed25519', linkage: 'static'
                     lib library: 'blake2',  linkage: 'static'
-                    lib library: 'yajl',  linkage: 'static'
-
+                    lib library: 'yajl',    linkage: 'static'
                 }
                 withType(SharedLibraryBinarySpec) {
                     def target = targetPlatform.name
@@ -237,8 +236,7 @@ model {
                     lib library: 'sqlite3', linkage: 'static'
                     lib library: 'ed25519', linkage: 'static'
                     lib library: 'blake2',  linkage: 'static'
-                    lib library: 'yajl',  linkage: 'static'
-
+                    lib library: 'yajl',    linkage: 'static'
                 }
                 withType(SharedLibraryBinarySpec) {
                     def target = targetPlatform.name

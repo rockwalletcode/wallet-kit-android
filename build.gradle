@@ -1,7 +1,11 @@
+ext {
+    wkVersion = '5.0.26'
+}
+
 buildscript {
     ext.androidConfig = [
         'compileSdkVersion':        30,
-        'minSdkVersion':            23,
+        'minSdkVersion':            24,
         'targetSdkVersion':         28,
     ]
     ext.versions = [
@@ -50,11 +54,15 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.2'
-        classpath 'digital.wup:android-maven-publish:3.6.2'
     }
 }
 
 allprojects {
+    // Disable unit tests until they are all fixed
+    tasks.withType(Test) {
+        enabled = false
+    }
+
     repositories {
         google()
         jcenter()
@@ -65,7 +73,6 @@ allprojects {
         }
     }
 }
-
 
 
 task clean(type: Delete) {

@@ -130,7 +130,7 @@ public class BlocksetBlockchain implements Blockchain {
     @Override
     @JsonIgnore
     public List<BlockchainFee> getFeeEstimates() {
-        return new ArrayList<>(getBlocksetFeeEstimates());
+        return new ArrayList<BlockchainFee>(getBlocksetFeeEstimates());
     }
 
     @Override

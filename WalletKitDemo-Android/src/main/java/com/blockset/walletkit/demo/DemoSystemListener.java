@@ -101,16 +101,16 @@ public class DemoSystemListener implements SystemListener {
 
     @Override
     public void handleNetworkEvent(System system, Network network, NetworkEvent event) {
-        ApplicationExecutors.runOnBlockingExecutor(() ->
-                Log.log(Level.FINE, String.format("Network: %s", event))
-        );
+        ApplicationExecutors.runOnBlockingExecutor(() -> {
+            Log.log(Level.FINE, String.format("Network: %s", event));
+        });
     }
 
     @Override
     public void handleManagerEvent(System system, WalletManager manager, WalletManagerEvent event) {
-        ApplicationExecutors.runOnBlockingExecutor(() ->
-            Log.log(Level.FINE, String.format("Manager (%s): %s", manager.getName(), event))
-        );
+        ApplicationExecutors.runOnBlockingExecutor(() -> {
+            Log.log(Level.FINE, String.format("Manager (%s): %s", manager.getName(), event));
+        });
     }
 
     @Override
@@ -131,16 +131,16 @@ public class DemoSystemListener implements SystemListener {
 
     @Override
     public void handleTransferEvent(System system, WalletManager manager, Wallet wallet, Transfer transfer, TransferEvent event) {
-        ApplicationExecutors.runOnBlockingExecutor(() ->
-            Log.log(Level.FINE, String.format("Transfer (%s:%s): %s", manager.getName(), wallet.getName(), event))
-        );
+        ApplicationExecutors.runOnBlockingExecutor(() -> {
+            Log.log(Level.FINE, String.format("Transfer (%s:%s): %s", manager.getName(), wallet.getName(), event));
+        });
     }
 
     // Misc.
 
     private void createWalletManager(System system, Network network) {
 
-        HashSet<Currency> filteredCurrencies = new HashSet<>();
+        HashSet<Currency> filteredCurrencies = new HashSet();
         Set<? extends Currency> currencies = network.getCurrencies();
         for (Currency c : currencies) {
             if (registerCurrencyCodes.contains(c.getCode())) {
