@@ -27,8 +27,8 @@ public class TransferSubmitError {
         EMAIL;
     }
 
-    Type type;
-    @Nullable String details;
+    public Type type;
+    public @Nullable String details;
 
     public TransferSubmitError(Type type, @Nullable String details) {
         this.type = type;
