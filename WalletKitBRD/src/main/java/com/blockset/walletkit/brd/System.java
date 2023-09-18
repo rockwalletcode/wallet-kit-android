@@ -1792,11 +1792,13 @@ final class System implements com.blockset.walletkit.System {
 
                                 WKTransferSubmitErrorType errorType = WKTransferSubmitErrorType.UNKNOWN;
 
-                                if (error instanceof SystemClientError.AuthenticationFailed) {
+                                if (error instanceof SystemClientError.AuthenticationFailed ) {
                                     Log.log(Level.SEVERE, "Authentication failed" + error.toString());
-                                    errorType = error.toString().contains("EMAIL") ?
-                                            WKTransferSubmitErrorType.EMAIL :
-                                            WKTransferSubmitErrorType.AUTHENTICATOR;
+                                    if(error.toString().contains("2FA required")) {
+                                        errorType = error.toString().contains("EMAIL") ?
+                                                WKTransferSubmitErrorType.EMAIL :
+                                                WKTransferSubmitErrorType.AUTHENTICATOR;
+                                    }
                                 }
 
                                 manager.getCoreBRCryptoWalletManager().announceSubmitTransferFailure(callbackState,

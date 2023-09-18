@@ -154,7 +154,7 @@ public class WKTransferSubmitError extends Structure {
             public int toCore() {return EMAIL_VALUE;}
         },
 
-        POSSIX_ERROR {
+        POSIX_ERROR {
             @Override
             public int toCore() {return TRANSFER_SUBMIT_ERROR_POSIX;}
         };
@@ -203,7 +203,7 @@ public class WKTransferSubmitError extends Structure {
                 case CLIENT_BAD_RESPONSE_VALUE:   return CLIENT_BAD_RESPONSE;
                 case CLIENT_UNAVAILABLE_VALUE:    return CLIENT_UNAVAILABLE;
                 case LOST_NETWORK_VALUE:          return LOST_NETWORK;
-                case TRANSFER_SUBMIT_ERROR_POSIX: return POSSIX_ERROR;
+                case TRANSFER_SUBMIT_ERROR_POSIX: return POSIX_ERROR;
                 default: throw new IllegalArgumentException("Invalid core value");
             }
         }
