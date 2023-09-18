@@ -425,11 +425,12 @@ public class WKWalletManager extends PointerType {
                 hash);
     }
 
-    public void announceSubmitTransferFailure(WKClientCallbackState callbackState, WKClientError error) {
+    public void announceSubmitTransferFailure(WKClientCallbackState callbackState, WKClientError error, WKTransferSubmitErrorType errorType) {
         WKNativeLibraryDirect.wkClientAnnounceSubmitTransferFailure (
                 this.getPointer(),
                 callbackState.getPointer(),
-                error.getPointer());
+                error.getPointer(),
+                errorType.toCore());
     }
 
     public void announceEstimateTransactionFeeSuccess(WKClientCallbackState callbackState, UnsignedLong costUnits, Map<String, String> meta) {

@@ -53,6 +53,13 @@ public class WKClientError extends PointerType {
             public int toCore() {
                 return LOST_CONNECTIVITY_VALUE;
             }
+        },
+
+        AUTHENTICATION_FAILED {
+            @Override
+            public int toCore() {
+                return AUTHENTICATION_FAILED_VALUE;
+            }
         };
 
         public static final int BAD_REQUEST_VALUE  = 0;
@@ -63,6 +70,8 @@ public class WKClientError extends PointerType {
         public static final int UNAVAILABLE_VALUE  = 5;
         public static final int LOST_CONNECTIVITY_VALUE = 6;
 
+        public static final int AUTHENTICATION_FAILED_VALUE = 7;
+
         public static Type fromCore(int core) {
             switch (core) {
                 case BAD_REQUEST_VALUE:  return BAD_REQUEST;
@@ -72,6 +81,7 @@ public class WKClientError extends PointerType {
                 case SUBMISSION_VALUE:   return SUBMISSION;
                 case UNAVAILABLE_VALUE:  return UNAVAILABLE;
                 case LOST_CONNECTIVITY_VALUE: return LOST_CONNECTIVITY;
+                case AUTHENTICATION_FAILED_VALUE: return  AUTHENTICATION_FAILED;
                 default: throw new IllegalArgumentException("Invalid core value");
             }
         }

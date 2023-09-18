@@ -16,15 +16,15 @@ public class TransferSubmitError {
         TRANSACTION_DUPLICATE,
         TRANSACTION,
         UNKNOWN,
+        AUTHENTICATOR,
+        EMAIL,
         CLIENT_BAD_REQUEST,
         CLIENT_PERMISSION,
         CLIENT_RESOURCE,
         CLIENT_BAD_RESPONSE,
         CLIENT_UNAVAILABLE,
         LOST_NETWORK,
-        POSIX,
-        AUTHENTICATOR,
-        EMAIL;
+        POSIX;
     }
 
     public Type type;

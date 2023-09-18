@@ -352,6 +352,26 @@ public class BdbApiClient {
                             case 404:
                                 error = new SystemClientError.BadRequest("Resource Not Found: Request: " + request.toString());
                                 break;
+                            case 401: {
+                                Map<String, Object> json = null;
+                                if (responseBody == null)
+                                    error = new SystemClientError.AuthenticationFailed("Authentication failed with no response body: " + request.toString());
+                                else {
+                                    try {
+                                        json = coder.deserializeJson(Map.class, responseBody.string());
+                                        String message = (String) json.get("error_type");
+                                        if ("Invalid 2FA".equals(message)) {
+                                            Map<String, Object> errorMessage = (Map<String, Object>) json.get("error");
+                                            error = new SystemClientError.AuthenticationFailed("2FA required of type: " +errorMessage.get("server_message") );
+                                        } else {
+                                            error = new SystemClientError.AuthenticationFailed("Authentication failed: " + json.toString() );
+                                        }
+                                    } catch (ObjectCoderException e) {
+                                        error = new SystemClientError.AuthenticationFailed("Authentication failed: " + request.toString());
+                                    }
+                                }
+                                break;
+                            }
                             case 403:
                                 error = new SystemClientError.Permission();
                                 break;

@@ -49,6 +49,13 @@ public enum WKTransferStateType {
         public int toCore() {
             return DELETED_VALUE;
         }
+    },
+
+    AUTHENTICATION {
+        @Override
+        public int toCore() {
+            return AUTHENTICATION_VALUE;
+        }
     };
 
     private static final int CREATED_VALUE   = 0;
@@ -58,6 +65,8 @@ public enum WKTransferStateType {
     private static final int ERRORED_VALUE   = 4;
     private static final int DELETED_VALUE   = 5;
 
+    private static final int AUTHENTICATION_VALUE = 6;
+
     public static WKTransferStateType fromCore(int nativeValue) {
         switch (nativeValue) {
             case CREATED_VALUE:   return CREATED;
@@ -66,6 +75,7 @@ public enum WKTransferStateType {
             case INCLUDED_VALUE:  return INCLUDED;
             case ERRORED_VALUE:   return ERRORED;
             case DELETED_VALUE:   return DELETED;
+            case AUTHENTICATION_VALUE: return AUTHENTICATION;
             default: throw new IllegalArgumentException("Invalid core value");
         }
     }

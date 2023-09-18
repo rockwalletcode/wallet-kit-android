@@ -142,6 +142,21 @@ public class WKTransferSubmitError extends Structure {
                 return LOST_NETWORK_VALUE;
             }
 
+        },
+
+        AUTHENTICATOR {
+            @Override
+            public int toCore() {return AUTHENTICATOR_VALUE;}
+        },
+
+        EMAIL {
+            @Override
+            public int toCore() {return EMAIL_VALUE;}
+        },
+
+        POSSIX_ERROR {
+            @Override
+            public int toCore() {return TRANSFER_SUBMIT_ERROR_POSIX;}
         };
 
         public static final int ACCOUNT_VALUE               = 0;
@@ -156,12 +171,15 @@ public class WKTransferSubmitError extends Structure {
         public static final int TRANSACTION_DUPLICATE_VALUE = 9;
         public static final int TRANSACTION_VALUE           = 10;
         public static final int UNKNOWN_VALUE               = 11;
-        public static final int CLIENT_BAD_REQUEST_VALUE    = 12;
-        public static final int CLIENT_PERMISSION_VALUE     = 13;
-        public static final int CLIENT_RESOURCE_VALUE       = 14;
-        public static final int CLIENT_BAD_RESPONSE_VALUE   = 15;
-        public static final int CLIENT_UNAVAILABLE_VALUE    = 16;
-        public static final int LOST_NETWORK_VALUE          = 17;
+        public static final int AUTHENTICATOR_VALUE         = 12;
+        public static final int EMAIL_VALUE                 = 13;
+        public static final int CLIENT_BAD_REQUEST_VALUE    = 14;
+        public static final int CLIENT_PERMISSION_VALUE     = 15;
+        public static final int CLIENT_RESOURCE_VALUE       = 16;
+        public static final int CLIENT_BAD_RESPONSE_VALUE   = 17;
+        public static final int CLIENT_UNAVAILABLE_VALUE    = 18;
+        public static final int LOST_NETWORK_VALUE          = 19;
+        public static final int TRANSFER_SUBMIT_ERROR_POSIX = 20;
 
         private static WKTransferSubmitError.Type fromCore(int core) {
             switch (core) {
@@ -177,12 +195,15 @@ public class WKTransferSubmitError extends Structure {
                 case TRANSACTION_DUPLICATE_VALUE: return TRANSACTION_DUPLICATE;
                 case TRANSACTION_VALUE:           return TRANSACTION;
                 case UNKNOWN_VALUE:               return UNKNOWN;
+                case AUTHENTICATOR_VALUE:         return AUTHENTICATOR;
+                case EMAIL_VALUE:                 return EMAIL;
                 case CLIENT_BAD_REQUEST_VALUE:    return CLIENT_BAD_REQUEST;
                 case CLIENT_PERMISSION_VALUE:     return CLIENT_PERMISSION;
                 case CLIENT_RESOURCE_VALUE:       return CLIENT_RESOURCE;
                 case CLIENT_BAD_RESPONSE_VALUE:   return CLIENT_BAD_RESPONSE;
                 case CLIENT_UNAVAILABLE_VALUE:    return CLIENT_UNAVAILABLE;
                 case LOST_NETWORK_VALUE:          return LOST_NETWORK;
+                case TRANSFER_SUBMIT_ERROR_POSIX: return POSSIX_ERROR;
                 default: throw new IllegalArgumentException("Invalid core value");
             }
         }
@@ -190,7 +211,8 @@ public class WKTransferSubmitError extends Structure {
         public abstract int toCore();
     }
 
-    private static int WK_TRANSFER_STATUS_DETAILS_LENGTH = (63+1);
+    //make sure that it is same as in wallet-kit-core/include/event/WKtransfer.h file!
+    private static int WK_TRANSFER_STATUS_DETAILS_LENGTH = (127+1);
 
 
     public int type;

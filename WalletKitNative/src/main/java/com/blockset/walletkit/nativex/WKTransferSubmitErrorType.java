@@ -37,10 +37,10 @@ public enum WKTransferSubmitErrorType {
         }
     };
 
-    private static final int UNKNOWN_VALUE = 0;
-    private static final int POSIX_VALUE = 1;
-    private static final int AUTHENTICATOR_VALUE = 2;
-    private static final int EMAIL_VALUE = 3;
+    private static final int UNKNOWN_VALUE = 11;
+    private static final int POSIX_VALUE = 20;
+    private static final int AUTHENTICATOR_VALUE = 12;
+    private static final int EMAIL_VALUE = 13;
 
     public static WKTransferSubmitErrorType fromCore(int nativeValue) {
         switch (nativeValue) {
