@@ -1791,26 +1791,19 @@ final class System implements com.blockset.walletkit.System {
                                 Log.log(Level.SEVERE, "BRCryptoCWMSubmitTransactionCallback: failed", error);
 
                                 WKTransferSubmitErrorType errorType = WKTransferSubmitErrorType.UNKNOWN;
-                                // TODO(WK)
-                                /*
-                                WKTransferSubmitErrorType errorType = WKTransferSubmitErrorType.UNKNOWN;
 
-                                QueryResponseError errorResponse = (QueryResponseError) error;
-                                Map<String, Object> jsonMap = errorResponse.getJson(); // Get json response
-
-                                Object jsonError = jsonMap.get("error");
-                                if (jsonError instanceof Map) {
-                                    Map<String, Object> errorJson = (Map<String, Object>) jsonError;
-                                    String message = (String) errorJson.get("server_message");
-                                    if ("EMAIL".equals(message)) {
-                                        errorType = WKTransferSubmitErrorType.EMAIL;
-                                    } else if ("AUTHENTICATOR".equals(message)) {
-                                        errorType = WKTransferSubmitErrorType.AUTHENTICATOR;
+                                if (error instanceof SystemClientError.AuthenticationFailed ) {
+                                    Log.log(Level.SEVERE, "Authentication failed" + error.toString());
+                                    if(error.toString().contains("2FA required")) {
+                                        errorType = error.toString().contains("EMAIL") ?
+                                                WKTransferSubmitErrorType.EMAIL :
+                                                WKTransferSubmitErrorType.AUTHENTICATOR;
                                     }
                                 }
-                                */
+
                                 manager.getCoreBRCryptoWalletManager().announceSubmitTransferFailure(callbackState,
-                                        Utilities.systemClientErrorToCrypto(error));
+                                        Utilities.systemClientErrorToCrypto(error),
+                                        errorType);
                             }
                         });
 
@@ -1818,7 +1811,8 @@ final class System implements com.blockset.walletkit.System {
             } catch (RuntimeException e) {
                 Log.log(Level.SEVERE, e.getMessage());
                 coreWalletManager.announceSubmitTransferFailure(callbackState,
-                        new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetTransfersCallback: failed with runtime exception: " + e.getMessage()));
+                        new WKClientError(WKClientError.Type.BAD_RESPONSE, "BRCryptoCWMGetTransfersCallback: failed with runtime exception: " + e.getMessage()),
+                        WKTransferSubmitErrorType.UNKNOWN);
 
             } finally {
                 coreWalletManager.give();

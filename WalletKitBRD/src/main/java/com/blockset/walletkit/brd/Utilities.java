@@ -60,9 +60,13 @@ import com.google.common.primitives.UnsignedLong;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* package */
 final class Utilities {
+
+    private static final Logger Log = Logger.getLogger(System.class.getName());
 
     /* package */
     static SystemState systemStateFromCrypto (WKSystemState state) {
@@ -185,11 +189,14 @@ final class Utilities {
             case CLIENT_BAD_RESPONSE:  return TransferSubmitError.Type.CLIENT_BAD_RESPONSE;
             case CLIENT_UNAVAILABLE:   return TransferSubmitError.Type.CLIENT_UNAVAILABLE;
             case LOST_NETWORK:         return TransferSubmitError.Type.LOST_NETWORK;
+            case AUTHENTICATOR:        return TransferSubmitError.Type.AUTHENTICATOR;
+            case EMAIL:                return TransferSubmitError.Type.EMAIL;
             default: throw new IllegalArgumentException("Unsupported type");
         }
     }
     /* package */
     static TransferState transferStateFromCrypto(WKTransferState state) {
+        Log.log(Level.SEVERE, "Transfer state type is " + state.type().toCore());
         switch (state.type()) {
             case CREATED:   return TransferState.CREATED();
             case DELETED:   return TransferState.DELETED();
@@ -216,6 +223,7 @@ final class Utilities {
                         new TransferSubmitError(transferSubmitErrorTypeFromCrypto(error.getType()), error.getDetails())
                 );
             }
+            case AUTHENTICATION: return TransferState.AUTHENTICATOR();
             default: throw new IllegalArgumentException("Unsupported state");
         }
     }
@@ -268,6 +276,10 @@ final class Utilities {
                 @Override
                 public WKClientError visit(SystemClientError.LostConnectivity error) {
                     return new WKClientError(WKClientError.Type.LOST_CONNECTIVITY, null);
+                }
+
+                public WKClientError visit(SystemClientError.AuthenticationFailed error) {
+                    return new WKClientError(WKClientError.Type.AUTHENTICATION_FAILED, error.details);
                 }
             };
 

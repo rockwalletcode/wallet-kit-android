@@ -18,6 +18,7 @@ public abstract class SystemClientError extends Exception {
         T visit(BadResponse error);
         T visit(Unavailable error);
         T visit(LostConnectivity error);
+        T visit(AuthenticationFailed error);
     }
 
     public abstract static class DefaultVisitor<T> implements Visitor<T> {
@@ -28,6 +29,7 @@ public abstract class SystemClientError extends Exception {
         @Nullable public T visit(BadResponse error) { return null; }
         @Nullable public T visit(Unavailable error) { return null; }
         @Nullable public T visit(LostConnectivity error) { return null; }
+        @Nullable public T visit(AuthenticationFailed error) { return null; }
      }
 
     public abstract <T> T accept(Visitor<T> visitor);
@@ -136,6 +138,23 @@ public abstract class SystemClientError extends Exception {
         @Override
         public String toString() {
             return "LostConnectivity{}";
+        }
+    }
+
+    public static class AuthenticationFailed extends SystemClientError {
+        public String details;
+
+        public AuthenticationFailed(String details) {
+            super();
+            this.details = details;
+        }
+        public <T> T accept(Visitor<T> visitor) {
+            return visitor.visit(this);
+        }
+
+        @Override
+        public String toString() {
+            return "Authentication{ " + details + " }";
         }
     }
 }

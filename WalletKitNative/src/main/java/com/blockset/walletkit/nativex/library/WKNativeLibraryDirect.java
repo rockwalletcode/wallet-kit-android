@@ -403,7 +403,7 @@ public final class WKNativeLibraryDirect {
     public static native void wkClientAnnounceBlockNumberSuccess(Pointer cwm, Pointer callbackState, long blockNumber, String verifiedBlockHash);
     public static native void wkClientAnnounceBlockNumberFailure(Pointer cwm, Pointer callbackState, Pointer clientError);
     public static native void wkClientAnnounceSubmitTransferSuccess(Pointer cwm, Pointer callbackState, String identifier, String hash);
-    public static native void wkClientAnnounceSubmitTransferFailure(Pointer cwm, Pointer callbackState, Pointer clientError);
+    public static native void wkClientAnnounceSubmitTransferFailure(Pointer cwm, Pointer callbackState, Pointer clientError, int errorType);
 
     public static native void wkClientAnnounceBlockNumberReceiveAddressSyncSuccess(Pointer cwm, Pointer callbackState, long blockNumber, String verifiedBlockHash);
     public static native void wkClientAnnounceBlockNumberReceiveAddressSyncFailure(Pointer cwm, Pointer callbackState, Pointer error);
