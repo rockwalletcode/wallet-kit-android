@@ -297,6 +297,7 @@ public interface SystemClient {
                                   @Nullable String exchangeId,
                                   @Nullable String secondFactorCode,
                                   @Nullable String secondFactorBackup,
+                                  @Nullable String proTransfer,
                                   boolean isSweep,
                                   CompletionHandler<TransactionIdentifier, SystemClientError> handler);
 

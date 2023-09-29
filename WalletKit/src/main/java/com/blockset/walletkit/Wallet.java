@@ -30,22 +30,22 @@ public interface Wallet {
     //Optional<? extends TransferFeeBasis> createTransferFeeBasis(Amount pricePerCostFactor, double costFactor);
 
     default Optional<? extends Transfer> createTransfer(Address target, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes) {
-        return createTransfer(target, amount, estimatedFeeBasis, attributes, null, null, null, false);
+        return createTransfer(target, amount, estimatedFeeBasis, attributes, null, null, null, null,false);
     }
 
     Optional<? extends Transfer> createTransfer(Address target, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId);
 
-    Optional<? extends Transfer> createTransfer(Address target, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup);
+    Optional<? extends Transfer> createTransfer(Address target, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, @Nullable String proTransfer);
 
-    Optional<? extends Transfer> createTransfer(Address target, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, boolean isSweep);
+    Optional<? extends Transfer> createTransfer(Address target, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, @Nullable String proTransfer, boolean isSweep);
 
     @Nullable String getAddressFromScript(@Nullable String outputScript);
 
     Optional<? extends Transfer> createTransfer(@Nullable String outputScript, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId);
 
-    Optional<? extends Transfer> createTransfer(@Nullable String outputScript, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup);
+    Optional<? extends Transfer> createTransfer(@Nullable String outputScript, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, @Nullable String proTransfer);
 
-    Optional<? extends Transfer> createTransfer(@Nullable String outputScript, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, boolean isSweep);
+    Optional<? extends Transfer> createTransfer(@Nullable String outputScript, Amount amount, TransferFeeBasis estimatedFeeBasis, @Nullable Set<TransferAttribute> attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, @Nullable String proTransfer, boolean isSweep);
 
     /**
      * Estimate the fee for a transfer with `amount` from `wallet`.  If provided use the `feeBasis`

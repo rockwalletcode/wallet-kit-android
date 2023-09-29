@@ -38,18 +38,18 @@ public final class WKNativeLibraryIndirect {
         INSTANCE.wkNetworkSetNetworkFees(network, fees, count);
     }
 
-    public static Pointer wkWalletCreateTransfer(Pointer wallet, Pointer target, Pointer amount, Pointer feeBasis, SizeT attributesCount, WKTransferAttribute[] attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, Boolean isSweep) {
+    public static Pointer wkWalletCreateTransfer(Pointer wallet, Pointer target, Pointer amount, Pointer feeBasis, SizeT attributesCount, WKTransferAttribute[] attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, @Nullable String proTransfer, Boolean isSweep) {
         attributes = attributesCount.intValue() == 0 ? null : attributes;
-        return INSTANCE.wkWalletCreateTransfer(wallet, target, amount, feeBasis, attributesCount, attributes, exchangeId, secondFactorCode, secondFactorBackup, isSweep);
+        return INSTANCE.wkWalletCreateTransfer(wallet, target, amount, feeBasis, attributesCount, attributes, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep);
     }
 
     public static void wkWalletGetAddressFromScript(Pointer wallet, @Nullable String outputScript, byte[] addressBuffer, SizeT addressBufferSize) {
         INSTANCE.wkWalletGetAddressFromScript(wallet, outputScript, addressBuffer, addressBufferSize);
     }
 
-    public static Pointer wkWalletCreateTransferFromScript(Pointer wallet, @Nullable String outputScript, Pointer amount, Pointer feeBasis, SizeT attributesCount, WKTransferAttribute[] attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, Boolean isSweep) {
+    public static Pointer wkWalletCreateTransferFromScript(Pointer wallet, @Nullable String outputScript, Pointer amount, Pointer feeBasis, SizeT attributesCount, WKTransferAttribute[] attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, @Nullable String proTransfer, Boolean isSweep) {
         attributes = attributesCount.intValue() == 0 ? null : attributes;
-        return INSTANCE.wkWalletCreateTransferFromScript(wallet, outputScript, amount, feeBasis, attributesCount, attributes, exchangeId, secondFactorCode, secondFactorBackup, isSweep);
+        return INSTANCE.wkWalletCreateTransferFromScript(wallet, outputScript, amount, feeBasis, attributesCount, attributes, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep);
     }
 
     public static int wkWalletValidateTransferAttributes(Pointer wallet, SizeT attributesCount, WKTransferAttribute[] attributes, IntByReference validates) {
@@ -208,11 +208,11 @@ public final class WKNativeLibraryIndirect {
         void wkNetworkSetNetworkFees(Pointer network, WKNetworkFee[] fees, SizeT count);
 
         // crypto/BRCryptoWallet.h
-        Pointer wkWalletCreateTransfer(Pointer wallet, Pointer target, Pointer amount, Pointer feeBasis, SizeT attributesCount, WKTransferAttribute[] attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, Boolean isSweep);
+        Pointer wkWalletCreateTransfer(Pointer wallet, Pointer target, Pointer amount, Pointer feeBasis, SizeT attributesCount, WKTransferAttribute[] attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, @Nullable String proTransfer, Boolean isSweep);
 
         void wkWalletGetAddressFromScript(Pointer wallet, @Nullable String outputScript, byte[] addressBuffer, SizeT addressBufferSize);
 
-        Pointer wkWalletCreateTransferFromScript(Pointer wallet, @Nullable String outputScript, Pointer amount, Pointer feeBasis, SizeT attributesCount, WKTransferAttribute[] attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, Boolean isSweep);
+        Pointer wkWalletCreateTransferFromScript(Pointer wallet, @Nullable String outputScript, Pointer amount, Pointer feeBasis, SizeT attributesCount, WKTransferAttribute[] attributes, @Nullable String exchangeId, @Nullable String secondFactorCode, @Nullable String secondFactorBackup, @Nullable String proTransfer, Boolean isSweep);
 
         int wkWalletValidateTransferAttributes(Pointer wallet, SizeT countOfAttributes, WKTransferAttribute[] attributes, IntByReference validates);
 

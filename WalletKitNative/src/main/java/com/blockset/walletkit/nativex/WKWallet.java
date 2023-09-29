@@ -192,6 +192,7 @@ public class WKWallet extends PointerType {
                                                @Nullable String exchangeId,
                                                @Nullable String secondFactorCode,
                                                @Nullable String secondFactorBackup,
+                                               @Nullable String proTransfer,
                                                boolean isSweep) {
         Pointer thisPtr = this.getPointer();
 
@@ -210,6 +211,7 @@ public class WKWallet extends PointerType {
                         exchangeId,
                         secondFactorCode,
                         secondFactorBackup,
+                        proTransfer,
                         isSweep
                 )
         ).transform(WKTransfer::new);
@@ -236,6 +238,7 @@ public class WKWallet extends PointerType {
                                                @Nullable String exchangeId,
                                                @Nullable String secondFactorCode,
                                                @Nullable String secondFactorBackup,
+                                               @Nullable String proTransfer,
                                                boolean isSweep) {
         Pointer thisPtr = this.getPointer();
 
@@ -254,6 +257,7 @@ public class WKWallet extends PointerType {
                         exchangeId,
                         secondFactorCode,
                         secondFactorBackup,
+                        proTransfer,
                         isSweep
                 )
         ).transform(WKTransfer::new);

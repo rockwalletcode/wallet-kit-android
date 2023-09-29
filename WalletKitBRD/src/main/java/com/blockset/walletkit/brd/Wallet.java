@@ -122,29 +122,7 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                 coreAttributes.add (TransferAttribute.from(attribute).getCoreBRCryptoTransferAttribute());
             }
 
-        return core.createTransfer(coreAddress, coreAmount, coreFeeBasis, coreAttributes, exchangeId, null, null, false)
-                .transform(t -> Transfer.create(t, this, false));
-    }
-
-    @Override
-    public Optional<Transfer> createTransfer(com.blockset.walletkit.Address target,
-                                             com.blockset.walletkit.Amount amount,
-                                             com.blockset.walletkit.TransferFeeBasis estimatedFeeBasis,
-                                             @Nullable Set<com.blockset.walletkit.TransferAttribute> attributes,
-                                             @Nullable String exchangeId,
-                                             @Nullable String secondFactorCode,
-                                             @Nullable String secondFactorBackup) {
-        WKAddress coreAddress = Address.from(target).getCoreBRCryptoAddress();
-        WKFeeBasis coreFeeBasis = TransferFeeBasis.from(estimatedFeeBasis).getCoreBRFeeBasis();
-        WKAmount coreAmount = Amount.from(amount).getCoreBRCryptoAmount();
-
-        List<WKTransferAttribute> coreAttributes = new ArrayList<>();
-        if (null != attributes)
-            for (com.blockset.walletkit.TransferAttribute attribute : attributes) {
-                coreAttributes.add (TransferAttribute.from(attribute).getCoreBRCryptoTransferAttribute());
-            }
-
-        return core.createTransfer(coreAddress, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, false)
+        return core.createTransfer(coreAddress, coreAmount, coreFeeBasis, coreAttributes, exchangeId, null, null, null, false)
                 .transform(t -> Transfer.create(t, this, false));
     }
 
@@ -156,6 +134,30 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                                              @Nullable String exchangeId,
                                              @Nullable String secondFactorCode,
                                              @Nullable String secondFactorBackup,
+                                             @Nullable String proTransfer) {
+        WKAddress coreAddress = Address.from(target).getCoreBRCryptoAddress();
+        WKFeeBasis coreFeeBasis = TransferFeeBasis.from(estimatedFeeBasis).getCoreBRFeeBasis();
+        WKAmount coreAmount = Amount.from(amount).getCoreBRCryptoAmount();
+
+        List<WKTransferAttribute> coreAttributes = new ArrayList<>();
+        if (null != attributes)
+            for (com.blockset.walletkit.TransferAttribute attribute : attributes) {
+                coreAttributes.add (TransferAttribute.from(attribute).getCoreBRCryptoTransferAttribute());
+            }
+
+        return core.createTransfer(coreAddress, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, false)
+                .transform(t -> Transfer.create(t, this, false));
+    }
+
+    @Override
+    public Optional<Transfer> createTransfer(com.blockset.walletkit.Address target,
+                                             com.blockset.walletkit.Amount amount,
+                                             com.blockset.walletkit.TransferFeeBasis estimatedFeeBasis,
+                                             @Nullable Set<com.blockset.walletkit.TransferAttribute> attributes,
+                                             @Nullable String exchangeId,
+                                             @Nullable String secondFactorCode,
+                                             @Nullable String secondFactorBackup,
+                                             @Nullable String proTransfer,
                                              boolean isSweep) {
         WKAddress coreAddress = Address.from(target).getCoreBRCryptoAddress();
         WKFeeBasis coreFeeBasis = TransferFeeBasis.from(estimatedFeeBasis).getCoreBRFeeBasis();
@@ -167,7 +169,7 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                 coreAttributes.add (TransferAttribute.from(attribute).getCoreBRCryptoTransferAttribute());
             }
 
-        return core.createTransfer(coreAddress, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, isSweep)
+        return core.createTransfer(coreAddress, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep)
                 .transform(t -> Transfer.create(t, this, false));
     }
 
@@ -192,28 +194,7 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                 coreAttributes.add (TransferAttribute.from(attribute).getCoreBRCryptoTransferAttribute());
             }
 
-        return core.createTransfer(outputScript, coreAmount, coreFeeBasis, coreAttributes, exchangeId, null, null, false)
-                .transform(t -> Transfer.create(t, this, false));
-    }
-
-    @Override
-    public Optional<Transfer> createTransfer(@Nullable String outputScript,
-                                             com.blockset.walletkit.Amount amount,
-                                             com.blockset.walletkit.TransferFeeBasis estimatedFeeBasis,
-                                             @Nullable Set<com.blockset.walletkit.TransferAttribute> attributes,
-                                             @Nullable String exchangeId,
-                                             @Nullable String secondFactorCode,
-                                             @Nullable String secondFactorBackup) {
-        WKFeeBasis coreFeeBasis = TransferFeeBasis.from(estimatedFeeBasis).getCoreBRFeeBasis();
-        WKAmount coreAmount = Amount.from(amount).getCoreBRCryptoAmount();
-
-        List<WKTransferAttribute> coreAttributes = new ArrayList<>();
-        if (null != attributes)
-            for (com.blockset.walletkit.TransferAttribute attribute : attributes) {
-                coreAttributes.add (TransferAttribute.from(attribute).getCoreBRCryptoTransferAttribute());
-            }
-
-        return core.createTransfer(outputScript, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, false)
+        return core.createTransfer(outputScript, coreAmount, coreFeeBasis, coreAttributes, exchangeId, null, null, null, false)
                 .transform(t -> Transfer.create(t, this, false));
     }
 
@@ -225,6 +206,29 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                                              @Nullable String exchangeId,
                                              @Nullable String secondFactorCode,
                                              @Nullable String secondFactorBackup,
+                                             @Nullable String proTransfer) {
+        WKFeeBasis coreFeeBasis = TransferFeeBasis.from(estimatedFeeBasis).getCoreBRFeeBasis();
+        WKAmount coreAmount = Amount.from(amount).getCoreBRCryptoAmount();
+
+        List<WKTransferAttribute> coreAttributes = new ArrayList<>();
+        if (null != attributes)
+            for (com.blockset.walletkit.TransferAttribute attribute : attributes) {
+                coreAttributes.add (TransferAttribute.from(attribute).getCoreBRCryptoTransferAttribute());
+            }
+
+        return core.createTransfer(outputScript, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, false)
+                .transform(t -> Transfer.create(t, this, false));
+    }
+
+    @Override
+    public Optional<Transfer> createTransfer(@Nullable String outputScript,
+                                             com.blockset.walletkit.Amount amount,
+                                             com.blockset.walletkit.TransferFeeBasis estimatedFeeBasis,
+                                             @Nullable Set<com.blockset.walletkit.TransferAttribute> attributes,
+                                             @Nullable String exchangeId,
+                                             @Nullable String secondFactorCode,
+                                             @Nullable String secondFactorBackup,
+                                             @Nullable String proTransfer,
                                              boolean isSweep) {
         WKFeeBasis coreFeeBasis = TransferFeeBasis.from(estimatedFeeBasis).getCoreBRFeeBasis();
         WKAmount coreAmount = Amount.from(amount).getCoreBRCryptoAmount();
@@ -235,7 +239,7 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                 coreAttributes.add (TransferAttribute.from(attribute).getCoreBRCryptoTransferAttribute());
             }
 
-        return core.createTransfer(outputScript, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, isSweep)
+        return core.createTransfer(outputScript, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep)
                 .transform(t -> Transfer.create(t, this, false));
     }
 

@@ -58,6 +58,7 @@ public class WKClient extends Structure {
                       String exchangeId,
                       String secondFactorCode,
                       String secondFactorBackup,
+                      String proTransfer,
                       boolean isSweep,
                       Pointer tx,
                       SizeT txLength);
@@ -162,6 +163,7 @@ public class WKClient extends Structure {
                     String exchangeId,
                     String secondFactorCode,
                     String secondFactorBackup,
+                    String proTransfer,
                     boolean isSweep,
                     byte[] transaction);
 
@@ -173,6 +175,7 @@ public class WKClient extends Structure {
                               String exchangeId,
                               String secondFactorCode,
                               String secondFactorBackup,
+                              String proTransfer,
                               boolean isSweep,
                               Pointer tx,
                               SizeT txLength) {
@@ -184,6 +187,7 @@ public class WKClient extends Structure {
                     exchangeId,
                     secondFactorCode,
                     secondFactorBackup,
+                    proTransfer,
                     isSweep,
                     tx.getByteArray(0, UnsignedInts.checkedCast(txLength.longValue()))
             );
