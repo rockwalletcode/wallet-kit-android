@@ -453,6 +453,7 @@ public class BlocksetSystemClient implements SystemClient {
                                   @Nullable String exchangeId,
                                   @Nullable String secondFactorCode,
                                   @Nullable String secondFactorBackup,
+                                  @Nullable String proTransfer,
                                   boolean isSweep,
                                   CompletionHandler<TransactionIdentifier, SystemClientError> handler) {
         String data = BaseEncoding.base64().encode(tx);
@@ -471,6 +472,10 @@ public class BlocksetSystemClient implements SystemClient {
 
         if (secondFactorBackup != null) {
             params.put("second_factor_backup", secondFactorBackup);
+        }
+
+        if (proTransfer != null) {
+            params.put("pro_transfer", proTransfer);
         }
 
         params.put("is_sweep", String.valueOf(isSweep));

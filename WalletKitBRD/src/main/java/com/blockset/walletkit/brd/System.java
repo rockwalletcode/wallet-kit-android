@@ -1759,6 +1759,7 @@ final class System implements com.blockset.walletkit.System {
                                           @Nullable String exchangeId,
                                           @Nullable String secondFactorCode,
                                           @Nullable String secondFactorBackup,
+                                          @Nullable String proTransfer,
                                           boolean isSweep,
                                           byte[] transaction) {
         EXECUTOR_CLIENT.execute(() -> {
@@ -1775,7 +1776,7 @@ final class System implements com.blockset.walletkit.System {
                 System        system   = optExtraction.get().system;
                 WalletManager manager  = optExtraction.get().manager;
 
-                system.query.createTransaction(manager.getNetwork().getUids(), transaction, identifier, exchangeId, secondFactorCode, secondFactorBackup, isSweep,
+                system.query.createTransaction(manager.getNetwork().getUids(), transaction, identifier, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep,
                         new CompletionHandler<TransactionIdentifier, SystemClientError>() {
                             @Override
                             public void handleData(TransactionIdentifier tid) {
