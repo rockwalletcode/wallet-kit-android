@@ -50,8 +50,8 @@ public interface Account {
         return Api.getProvider().accountProvider().createFromSerialization(serialization, uids);
     }
 
-    static String getXPubFromSerialization(byte[] serialization, String code, byte[] phrase) {
-        return Api.getProvider().accountProvider().getXPubFromSerialization(serialization, code, phrase);
+    static String getXPubFromSerialization(byte[] serialization, String code, byte[] phrase, boolean isChange) {
+        return Api.getProvider().accountProvider().getXPubFromSerialization(serialization, code, phrase, isChange);
     }
 
     /**

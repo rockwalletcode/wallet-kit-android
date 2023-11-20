@@ -66,7 +66,7 @@ public class WKAccount extends PointerType {
         ).transform(WKAccount::new);
     }
 
-    public static String getXPubFromSerialization(byte[] serialization, WKNetworkType type, byte[] phrase) {
+    public static String getXPubFromSerialization(byte[] serialization, WKNetworkType type, byte[] phrase, boolean isChange) {
         byte[] xpubBuf = new byte[120];
 
         String phraseStr = new String(phrase, StandardCharsets.UTF_8).replace("\u0000", "");
@@ -77,7 +77,8 @@ public class WKAccount extends PointerType {
                 type.ordinal(),
                 xpubBuf,
                 new SizeT(120),
-                phraseStr
+                phraseStr,
+                isChange ? 1 : 0
         );
 
         return new String(xpubBuf, StandardCharsets.UTF_8).replace("\u0000", "");
