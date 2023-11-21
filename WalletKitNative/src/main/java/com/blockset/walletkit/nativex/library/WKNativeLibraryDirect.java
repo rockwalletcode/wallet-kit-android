@@ -41,7 +41,7 @@ public final class WKNativeLibraryDirect {
     // crypto/BRCryptoAccount.h
     public static native Pointer wkAccountCreate(ByteBuffer phrase, long /* BRCryptoTimestamp */ timestamp, String uids, int isMainnet);
     public static native Pointer wkAccountCreateFromSerialization(byte[] serialization, SizeT serializationLength, String uids);
-    public static native void wkAccountGetXPubFromSerialization(byte[] serialization, SizeT serializationLength, int type, byte[] xpubBuffer, SizeT xpubBufferSize, String phrase);
+    public static native void wkAccountGetXPubFromSerialization(byte[] serialization, SizeT serializationLength, int type, byte[] xpubBuffer, SizeT xpubBufferSize, String phrase, int child);
     public static native long wkAccountGetTimestamp(Pointer account);
     public static native Pointer wkAccountGetUids(Pointer account);
     public static native Pointer wkAccountGetFileSystemIdentifier(Pointer account);
