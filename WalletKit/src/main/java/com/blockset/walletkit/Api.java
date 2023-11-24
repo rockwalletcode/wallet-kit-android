@@ -23,7 +23,7 @@ public final class Api {
     public interface AccountProvider {
         Optional<Account> createFromPhrase(byte[] phraseUtf8, Date timestamp, String uids, boolean isMainnet);
         Optional<Account> createFromSerialization(byte[] serialization, String uids);
-        String getXPubFromSerialization(byte[] serialization, String code, byte[] phrase);
+        String getXPubFromSerialization(byte[] serialization, String code, byte[] phrase, boolean isChange);
         byte[] generatePhrase(List<String> words);
         boolean validatePhrase(byte[] phraseUtf8, List<String> words);
     }
