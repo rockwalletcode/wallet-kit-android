@@ -43,7 +43,7 @@ public final class ApiProvider implements Api.Provider {
         }
 
         @Override
-        public String getXPubFromSerialization(byte[] serialization, String code, byte[] phrase) {
+        public String getXPubFromSerialization(byte[] serialization, String code, byte[] phrase, boolean isChange) {
             WKNetworkType wkType = WKNetworkType.BTC;
             if (Objects.equals(code, "btc") || Objects.equals(code, "BTC")) {
                 wkType = WKNetworkType.BTC;
@@ -57,7 +57,7 @@ public final class ApiProvider implements Api.Provider {
                 wkType = WKNetworkType.DOGE;
             }
 
-            return Account.getXPubFromSerialization(serialization, wkType, phrase);
+            return Account.getXPubFromSerialization(serialization, wkType, phrase, isChange);
         }
 
         @Override

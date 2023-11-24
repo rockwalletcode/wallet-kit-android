@@ -77,8 +77,8 @@ final class Account implements com.blockset.walletkit.Account {
         return core.transform(Account::create);
     }
 
-    static String getXPubFromSerialization(byte[] serialization, WKNetworkType type, byte[] phrase) {
-        return WKAccount.getXPubFromSerialization(serialization, type, phrase);
+    static String getXPubFromSerialization(byte[] serialization, WKNetworkType type, byte[] phrase, boolean isChange) {
+        return WKAccount.getXPubFromSerialization(serialization, type, phrase, isChange);
     }
 
     static Account create(WKAccount core) {
