@@ -7,8 +7,6 @@
  */
 package com.blockset.walletkit.nativex;
 
-import android.graphics.Path;
-
 import com.blockset.walletkit.nativex.library.WKNativeLibraryDirect;
 import com.blockset.walletkit.nativex.library.WKNativeLibraryIndirect;
 import com.blockset.walletkit.nativex.utility.SizeT;

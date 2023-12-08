@@ -35,6 +35,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -767,7 +768,8 @@ public class BlocksetSystemClient implements SystemClient {
         params.put("amount", String.valueOf(amount));
         params.put("paymail", paymail);
         params.put("transaction", data);
-        params.put("ancestors", String.join(",", ancestors));
+        params.put("ancestors",  ancestors.stream()
+                .collect(Collectors.joining(",")));
 
         bdbClient.sendPost("tokenized/transaction", ImmutableMultimap.of(),
                 ImmutableMap.copyOf(params),
