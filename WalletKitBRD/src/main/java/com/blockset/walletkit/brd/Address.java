@@ -25,6 +25,12 @@ final class Address implements com.blockset.walletkit.Address {
         return core.transform(Address::create);
     }
 
+    static Optional<Address> createPaymail(String address, com.blockset.walletkit.Network network) {
+        Network cryptoNetwork = Network.from(network);
+        Optional<WKAddress> core = WKAddress.createPaymail(address, cryptoNetwork.getCoreBRCryptoNetwork());
+        return core.transform(Address::create);
+    }
+
     /* package */
     static Optional<Address> createLegacy(String address, com.blockset.walletkit.Network network) {
         if (network.getName().equals("Bitcoin Cash") && (address.startsWith("1") || address.startsWith("3"))) {

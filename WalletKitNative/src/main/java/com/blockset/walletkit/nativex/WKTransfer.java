@@ -9,10 +9,13 @@ package com.blockset.walletkit.nativex;
 
 import com.blockset.walletkit.nativex.library.WKNativeLibraryDirect;
 import com.blockset.walletkit.nativex.utility.SizeT;
+import com.blockset.walletkit.nativex.utility.SizeTByReference;
 import com.google.common.base.Optional;
 import com.google.common.primitives.UnsignedLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
+
+import java.util.Arrays;
 
 public class WKTransfer extends PointerType {
 
@@ -163,5 +166,38 @@ public class WKTransfer extends PointerType {
         Pointer thisPtr = this.getPointer();
 
         WKNativeLibraryDirect.wkTransferGive(thisPtr);
+    }
+
+    public UnsignedLong getAncestorsCount() {
+        Pointer thisPtr = this.getPointer();
+
+        return UnsignedLong.fromLongBits(
+                WKNativeLibraryDirect.wkTransferAncestorsCount(
+                        thisPtr
+                ).longValue()
+        );
+    }
+
+    public String getAncestorAt(UnsignedLong index) {
+        Pointer thisPtr = this.getPointer();
+        int size = 65;
+        char[] buffer = new char[size];
+
+        WKNativeLibraryDirect.wkTransferGetAncestorsAt(
+                        buffer,
+                        size,
+                        thisPtr,
+                        new SizeT(index.longValue())
+                );
+
+        return Arrays.toString(buffer);
+    }
+
+    public String getSerializedTransfer(WKNetwork network) {
+        Pointer thisPtr = this.getPointer();
+        SizeTByReference count = new SizeTByReference();
+        return WKNativeLibraryDirect.
+                wkTransferSerializeForFeeEstimation(thisPtr, network.getPointer(),count)
+                .getString(0, "UTF-8");
     }
 }

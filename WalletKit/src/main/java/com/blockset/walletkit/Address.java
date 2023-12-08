@@ -31,6 +31,10 @@ public interface Address {
         return Api.getProvider().addressProvider().create(address, network);
     }
 
+    static Optional<Address> createPaymail(String address, Network network) {
+        return Api.getProvider().addressProvider().createPaymail(address, network);
+    }
+
     static Optional<Address> createLegacy(String address, Network network) {
         return Api.getProvider().addressProvider().createLegacy(address, network);
     }

@@ -8,6 +8,9 @@
 package com.blockset.walletkit.brd;
 
 import com.blockset.walletkit.NetworkType;
+import com.blockset.walletkit.SystemClient;
+import com.blockset.walletkit.brd.systemclient.BlocksetTransaction;
+import com.blockset.walletkit.errors.SystemClientError;
 import com.blockset.walletkit.nativex.cleaner.ReferenceCleaner;
 import com.blockset.walletkit.nativex.WKAddress;
 import com.blockset.walletkit.nativex.WKAmount;
@@ -25,6 +28,7 @@ import com.blockset.walletkit.errors.FeeEstimationError;
 import com.blockset.walletkit.errors.LimitEstimationError;
 import com.blockset.walletkit.errors.LimitEstimationInsufficientFundsError;
 import com.blockset.walletkit.errors.LimitEstimationServiceFailureError;
+import com.blockset.walletkit.nativex.utility.SizeT;
 import com.blockset.walletkit.utility.CompletionHandler;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
@@ -36,6 +40,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
@@ -69,6 +76,7 @@ final class Wallet implements com.blockset.walletkit.Wallet {
         throw new IllegalArgumentException("Unsupported wallet instance");
     }
 
+    private static final Logger Log = Logger.getLogger(System.class.getName());
     private final WKWallet core;
     private final WalletManager walletManager;
     private final SystemCallbackCoordinator callbackCoordinator;
@@ -169,8 +177,72 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                 coreAttributes.add (TransferAttribute.from(attribute).getCoreBRCryptoTransferAttribute());
             }
 
-        return core.createTransfer(coreAddress, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep)
+        Optional<Transfer> transaction = core.createTransfer(coreAddress, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep)
                 .transform(t -> Transfer.create(t, this, false));
+
+        if(defaultUnitCurrencySupplier.get().getType().toLowerCase() == "tokenized"){
+            System system = walletManager.getSystem();
+            Optional<Double> am = coreAmount.getDouble(coreAmount.getUnit());
+            String serializedTx = transaction.get().serializeTransfer();
+            final String[] negTx = new String[1];
+            final boolean[] gotRes = {false};
+            // send transaction for negotiation and then try to retrieve it.
+            system.getSystemClient().createTokenized(am.get().longValue(),
+                    target.toString(),
+                    serializedTx,
+                    transaction.get().getAncestors(),
+                    new CompletionHandler<SystemClient.NegTxThreadID, SystemClientError>() {
+
+                        /**
+                         * @param data
+                         */
+                        @Override
+                        public void handleData(SystemClient.NegTxThreadID data) {
+                            String threadID = data.getID();
+                            Log.log(Level.INFO, String.format("createTokenized: succeeded %s", threadID));
+                            system.getSystemClient().getUnsignedTokenized(threadID,
+                                    new CompletionHandler<SystemClient.UnSigTokenizedTx, SystemClientError>() {
+                                        @Override
+                                        public void handleData(SystemClient.UnSigTokenizedTx data) {
+                                            Log.log(Level.INFO, String.format("getting negotiated transaction: succeeded %s", data.getTransaction()));
+                                            negTx[0] = data.getTransaction();
+                                            gotRes[0] = true;
+                                        }
+
+                                        @Override
+                                        public void handleError(SystemClientError error) {
+                                            Log.log(Level.INFO, String.format("getting negotiated transaction: failed %s", error));
+                                            gotRes[0] = true;
+                                        }
+                                    });
+                        }
+
+                        /**
+                         * @param error
+                         */
+                        @Override
+                        public void handleError(SystemClientError error) {
+                            Log.log(Level.SEVERE, String.format("createTokenized: failed %s", error));
+                            gotRes[0] = true;
+                        }
+                    });
+            int count = 10;
+            while (gotRes[0] && count > 0) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                    count--;
+                } catch (InterruptedException e) {
+                }
+            }
+            //if there is negotiated tx, we need to add input for network fee
+            byte[] newTrasfer = BlocksetTransaction.asData(negTx[0]);
+            transaction = core.updateTransfer(transaction.get().getCoreBRCryptoTransfer(),
+                    newTrasfer,
+                    new SizeT(newTrasfer.length))
+                    .transform(t -> Transfer.create(t, this, false));
+        }
+
+        return transaction;
     }
 
     @Override

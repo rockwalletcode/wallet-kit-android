@@ -1,5 +1,5 @@
 ext {
-    wkVersion = '5.0.31'
+    wkVersion = '5.0.5B'
 }
 
 buildscript {

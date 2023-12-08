@@ -78,6 +78,11 @@ public final class ApiProvider implements Api.Provider {
         }
 
         @Override
+        public Optional<com.blockset.walletkit.Address> createPaymail(String address, Network network) {
+            return Address.createPaymail(address, network).transform(a -> a);
+        }
+
+        @Override
         public Optional<com.blockset.walletkit.Address> createLegacy(String address, Network network) {
             return Address.createLegacy(address, network).transform(a -> a);
         }

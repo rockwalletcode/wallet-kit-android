@@ -1,3 +1,4 @@
 [submodule "WalletKitNative/src/main/cpp/core"]
 	path = WalletKitNative/src/main/cpp/core
 	url = https://github.com/rockwalletcode/wallet-kit-core.git
+	branch = jernejjereb/feat/negotiation-tkn

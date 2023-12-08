@@ -35,13 +35,13 @@ public class BlocksetTransaction implements Transaction {
 
     private static final Pattern HEXADECIMAL_PATTERN = Pattern.compile("\\p{XDigit}+");
 
-    private static boolean isHexadecimal(String input) {
+    public static boolean isHexadecimal(String input) {
         if (input == null) return false;
         final Matcher matcher = HEXADECIMAL_PATTERN.matcher(input);
         return matcher.matches();
     }
 
-    private static byte[] asData(String hexString) {
+    public static byte[] asData(String hexString) {
         byte[] byteArray = new byte[hexString.length() / 2];
 
         for (int i = 0; i < hexString.length() / 2; i++) {

@@ -31,6 +31,8 @@ public final class Api {
     public interface AddressProvider {
         Optional<Address> create(String address, Network network);
 
+        Optional<Address> createPaymail(String address, Network network);
+
         Optional<Address> createLegacy(String address, Network network);
     }
 

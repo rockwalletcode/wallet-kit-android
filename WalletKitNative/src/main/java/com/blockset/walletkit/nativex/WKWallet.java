@@ -7,6 +7,8 @@
  */
 package com.blockset.walletkit.nativex;
 
+import android.graphics.Path;
+
 import com.blockset.walletkit.nativex.library.WKNativeLibraryDirect;
 import com.blockset.walletkit.nativex.library.WKNativeLibraryIndirect;
 import com.blockset.walletkit.nativex.utility.SizeT;
@@ -297,5 +299,15 @@ public class WKWallet extends PointerType {
         Pointer thisPtr = this.getPointer();
 
         WKNativeLibraryDirect.wkWalletGive(thisPtr);
+    }
+
+    public Optional<WKTransfer> updateTransfer(WKTransfer transfer, byte[] newTransfer, SizeT trSize){
+        Pointer thisPtr = this.getPointer();
+        return Optional.fromNullable(
+                WKNativeLibraryIndirect.wkWalletUpdateTransfer(thisPtr,
+                        transfer.getPointer(),
+                        newTransfer,
+                        trSize)
+        ).transform(WKTransfer::new);
     }
 }

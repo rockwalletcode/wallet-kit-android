@@ -158,6 +158,7 @@ public final class WKNativeLibraryDirect {
     public static native Pointer wkNetworkGetAccountInitializationData (Pointer network, Pointer account, SizeTByReference bytesCount);
     public static native void wkNetworkInitializeAccount (Pointer network, Pointer account, byte[] bytes, SizeT bytesCount);
     public static native Pointer wkNetworkCreateAddress(Pointer pointer, String address);
+    public static native Pointer wkNetworkCreatePaymailAddress(Pointer pointer, String address);
     public static native Pointer wkNetworkCreateAddressLegacy(Pointer pointer, String address);
 
     // crypto/BRCryptoNetwork.h (BRCryptoNetworkFee)
@@ -257,6 +258,9 @@ public final class WKNativeLibraryDirect {
     public static native int wkTransferEqual(Pointer transfer, Pointer other);
     public static native Pointer wkTransferTake(Pointer obj);
     public static native void wkTransferGive(Pointer obj);
+    public static native SizeT wkTransferAncestorsCount(Pointer transfer);
+    public static native Pointer wkTransferGetAncestorsAt (char[] outBuf, int size, Pointer transfer, SizeT index);
+    public static native Pointer wkTransferSerializeForFeeEstimation (Pointer transfer,Pointer  network, SizeTByReference serializationCount);
 
     // include/WKTransfer.h (WKTransferState)
     public static native int wkTransferStateGetType(Pointer state);

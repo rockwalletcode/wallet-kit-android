@@ -167,6 +167,18 @@ public interface SystemClient {
         public Boolean isDeleted();
     };
 
+    interface NegTxThreadID {
+        public String getID();
+    }
+
+    interface NegotiatedTransaction {
+        public String getTransaction();
+    }
+
+    interface UnSigTokenizedTx {
+        public String getTransaction();
+    }
+
     /**
      * Cancel all client requests that are currently enqueued or executing
      */
@@ -430,4 +442,20 @@ public interface SystemClient {
     public void createHederaAccount(String blockchainId,
                                     String publicKey,
                                     CompletionHandler<List<HederaAccount>, SystemClientError> handler);
+
+    /**
+     * Sends the transaction for negotiation
+     * @param amount Amount that will be send
+     * @param paymail Paymail address of receiver
+     * @param tx    Transaction to be negotiated
+     * @param ancestors List of ancestor transaction of input
+     * @param handle   The handler for returned threadID for negotiated tx
+     */
+    public void createTokenized (Long amount,
+                                 String paymail,
+                                 String tx,
+                                 List<String> ancestors,
+                                 CompletionHandler<NegTxThreadID, SystemClientError> handle);
+    public void getUnsignedTokenized (String threadId,
+                                      CompletionHandler<UnSigTokenizedTx, SystemClientError> handle);
 }

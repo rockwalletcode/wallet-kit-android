@@ -24,6 +24,15 @@ public class WKAddress extends PointerType {
         ).transform(WKAddress::new);
     }
 
+    public static Optional<WKAddress> createPaymail(String address, WKNetwork network) {
+        return Optional.fromNullable(
+                WKNativeLibraryDirect.wkNetworkCreatePaymailAddress(
+                        network.getPointer(),
+                        address
+                )
+        ).transform(WKAddress::new);
+    }
+
     public static Optional<WKAddress> createLegacy(String address, WKNetwork network) {
         return Optional.fromNullable(
                 WKNativeLibraryDirect.wkNetworkCreateAddressLegacy(

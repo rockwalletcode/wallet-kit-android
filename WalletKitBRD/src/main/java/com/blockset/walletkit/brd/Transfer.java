@@ -16,7 +16,9 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.primitives.UnsignedLong;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -58,6 +60,7 @@ final class Transfer implements com.blockset.walletkit.Transfer {
     private final Supplier<Amount> amountSupplier;
     private final Supplier<TransferDirection> directionSupplier;
     private final Supplier<Set<TransferAttribute>> attributesSupplier;
+    private final Supplier<List<String>> ancestors;
 
     private Transfer(WKTransfer core, Wallet wallet) {
         this.core = core;
@@ -82,6 +85,17 @@ final class Transfer implements com.blockset.walletkit.Transfer {
                     attributes.add(attribute.get().copy());
             }
             return attributes;
+        });
+
+        this.ancestors = Suppliers.memoize(() -> {
+            List<String> ancestors = new ArrayList<>();
+            UnsignedLong count = core.getAncestorsCount();
+            for (UnsignedLong i = UnsignedLong.ZERO; i.compareTo(count) < 0; i = i.plus(UnsignedLong.ONE)) {
+                String ancestor = core.getAncestorAt(i);
+                ancestors.add(ancestor);
+            }
+
+            return ancestors;
         });
     }
 
@@ -189,5 +203,13 @@ final class Transfer implements com.blockset.walletkit.Transfer {
     /* package */
     WKTransfer getCoreBRCryptoTransfer() {
         return core;
+    }
+
+    public List<String> getAncestors() {
+        return this.ancestors.get();
+    }
+
+    public String serializeTransfer() {
+        return core.getSerializedTransfer(wallet.getWalletManager().getNetwork().getCoreBRCryptoNetwork());
     }
 }

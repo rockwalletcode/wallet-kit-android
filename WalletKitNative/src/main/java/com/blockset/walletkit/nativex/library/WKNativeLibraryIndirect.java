@@ -202,6 +202,17 @@ public final class WKNativeLibraryIndirect {
                 currenciesCount);
     }
 
+    public static Pointer wkWalletUpdateTransfer(Pointer wallet,
+                                                 Pointer wkTransfer,
+                                                 byte[] newTransfer,
+                                                 SizeT trSize) {
+        return INSTANCE.wkWalletUpdateTransfer(
+                wallet,
+                wkTransfer,
+                newTransfer,
+                trSize);
+    }
+
     public interface LibraryInterface extends Library {
 
         // crypto/BRCryptoNetwork.h
@@ -289,5 +300,10 @@ public final class WKNativeLibraryIndirect {
                                             int scheme,
                                             WKCurrency[] currencies,
                                             SizeT currenciesCount);
+
+        Pointer wkWalletUpdateTransfer(Pointer wallet,
+                                       Pointer wkTransfer,
+                                       byte[] newTransfer,
+                                       SizeT trSize);
     }
 }
