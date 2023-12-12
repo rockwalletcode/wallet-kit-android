@@ -59,7 +59,7 @@ public class WKClient extends Structure {
                       String secondFactorCode,
                       String secondFactorBackup,
                       String proTransfer,
-                      boolean isSweep,
+                      SizeT isSweep,
                       Pointer tx,
                       SizeT txLength);
     }
@@ -164,7 +164,7 @@ public class WKClient extends Structure {
                     String secondFactorCode,
                     String secondFactorBackup,
                     String proTransfer,
-                    boolean isSweep,
+                    SizeT isSweep,
                     byte[] transaction);
 
         @Override
@@ -176,7 +176,7 @@ public class WKClient extends Structure {
                               String secondFactorCode,
                               String secondFactorBackup,
                               String proTransfer,
-                              boolean isSweep,
+                              SizeT isSweep,
                               Pointer tx,
                               SizeT txLength) {
             handle(
