@@ -102,6 +102,7 @@ import com.blockset.walletkit.events.walletmanager.WalletManagerWalletDeletedEve
 import com.blockset.walletkit.brd.systemclient.BlocksetAmount;
 import com.blockset.walletkit.brd.systemclient.BlocksetCurrency;
 import com.blockset.walletkit.brd.systemclient.BlocksetTransfer;
+import com.blockset.walletkit.nativex.utility.SizeT;
 import com.blockset.walletkit.utility.CompletionHandler;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -1760,7 +1761,7 @@ final class System implements com.blockset.walletkit.System {
                                           @Nullable String secondFactorCode,
                                           @Nullable String secondFactorBackup,
                                           @Nullable String proTransfer,
-                                          boolean isSweep,
+                                          SizeT isSweep,
                                           byte[] transaction) {
         EXECUTOR_CLIENT.execute(() -> {
 
@@ -1776,7 +1777,8 @@ final class System implements com.blockset.walletkit.System {
                 System        system   = optExtraction.get().system;
                 WalletManager manager  = optExtraction.get().manager;
 
-                system.query.createTransaction(manager.getNetwork().getUids(), transaction, identifier, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep,
+                system.query.createTransaction(manager.getNetwork().getUids(), transaction, identifier, exchangeId, secondFactorCode, secondFactorBackup, proTransfer,
+                        isSweep.equals(new SizeT(0)) ? false : true,
                         new CompletionHandler<TransactionIdentifier, SystemClientError>() {
                             @Override
                             public void handleData(TransactionIdentifier tid) {

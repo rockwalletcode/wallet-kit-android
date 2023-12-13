@@ -247,6 +247,7 @@ public final class WKNativeLibraryDirect {
     public static native Pointer wkTransferGetState(Pointer transfer);
     public static native Pointer wkTransferGetIdentifier(Pointer transfer);
     public static native Pointer wkTransferGetExchangeId(Pointer transfer);
+    public static native SizeT wkTransferGetIsSweep(Pointer transfer);
     public static native Pointer wkTransferGetHash(Pointer transfer);
     public static native Pointer wkTransferGetUnitForAmount (Pointer transfer);
     public static native Pointer wkTransferGetUnitForFee (Pointer transfer);
