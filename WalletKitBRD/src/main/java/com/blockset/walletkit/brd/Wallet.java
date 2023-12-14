@@ -180,16 +180,15 @@ final class Wallet implements com.blockset.walletkit.Wallet {
         Optional<Transfer> transaction = core.createTransfer(coreAddress, coreAmount, coreFeeBasis, coreAttributes, exchangeId, secondFactorCode, secondFactorBackup, proTransfer, isSweep)
                 .transform(t -> Transfer.create(t, this, false));
 
-        if(defaultUnitCurrencySupplier.get().getType().toLowerCase() == "tokenized"){
+        if(defaultUnitCurrencySupplier.get().getType().toLowerCase().equals("tokenized")){
             System system = walletManager.getSystem();
             Optional<Double> am = coreAmount.getDouble(coreAmount.getUnit());
-            String serializedTx = transaction.get().serializeTransfer();
             final String[] negTx = new String[1];
             final boolean[] gotRes = {false};
             // send transaction for negotiation and then try to retrieve it.
             system.getSystemClient().createTokenized(am.get().longValue(),
                     target.toString(),
-                    serializedTx,
+                    transaction.get().serializeTransfer(),
                     transaction.get().getAncestors(),
                     new CompletionHandler<SystemClient.NegTxThreadID, SystemClientError>() {
 
@@ -227,7 +226,7 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                         }
                     });
             int count = 10;
-            while (gotRes[0] && count > 0) {
+            while (!gotRes[0] && count > 0) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                     count--;

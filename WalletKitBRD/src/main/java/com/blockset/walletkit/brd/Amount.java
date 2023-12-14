@@ -26,17 +26,17 @@ import java.util.Objects;
 import static com.google.common.base.Preconditions.checkArgument;
 
 /* package */
-final class Amount implements com.blockset.walletkit.Amount {
+public final class Amount implements com.blockset.walletkit.Amount {
 
     /* package */
-    static Amount create(double value, com.blockset.walletkit.Unit unit) {
+    public static Amount create(double value, com.blockset.walletkit.Unit unit) {
         Unit cryptoUnit = Unit.from(unit);
         WKAmount core = WKAmount.create(value, cryptoUnit.getCoreBRCryptoUnit());
         return Amount.create(core);
     }
 
     /* package */
-    static Amount create(long value, com.blockset.walletkit.Unit unit) {
+    public static Amount create(long value, com.blockset.walletkit.Unit unit) {
         Unit cryptoUnit = Unit.from(unit);
         WKAmount core = WKAmount.create(value, cryptoUnit.getCoreBRCryptoUnit());
         return Amount.create(core);

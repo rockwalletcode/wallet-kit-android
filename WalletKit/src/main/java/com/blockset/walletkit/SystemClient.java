@@ -453,7 +453,7 @@ public interface SystemClient {
      */
     public void createTokenized (Long amount,
                                  String paymail,
-                                 String tx,
+                                 byte[] tx,
                                  List<String> ancestors,
                                  CompletionHandler<NegTxThreadID, SystemClientError> handle);
     public void getUnsignedTokenized (String threadId,

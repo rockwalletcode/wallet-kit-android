@@ -15,6 +15,7 @@ import com.google.common.primitives.UnsignedLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class WKTransfer extends PointerType {
@@ -181,7 +182,7 @@ public class WKTransfer extends PointerType {
     public String getAncestorAt(UnsignedLong index) {
         Pointer thisPtr = this.getPointer();
         int size = 65;
-        char[] buffer = new char[size];
+        byte[] buffer = new byte[size];
 
         WKNativeLibraryDirect.wkTransferGetAncestorsAt(
                         buffer,
@@ -189,15 +190,16 @@ public class WKTransfer extends PointerType {
                         thisPtr,
                         new SizeT(index.longValue())
                 );
-
-        return Arrays.toString(buffer);
+        String ancestor = new String(buffer, StandardCharsets.UTF_8);
+        return ancestor.replace("\0", "");
     }
 
-    public String getSerializedTransfer(WKNetwork network) {
+    public byte [] getSerializedTransfer(WKNetwork network) {
         Pointer thisPtr = this.getPointer();
         SizeTByReference count = new SizeTByReference();
-        return WKNativeLibraryDirect.
-                wkTransferSerializeForFeeEstimation(thisPtr, network.getPointer(),count)
-                .getString(0, "UTF-8");
+        Pointer result = WKNativeLibraryDirect.
+                wkTransferSerializeForFeeEstimation(thisPtr, network.getPointer(),count);
+        byte[] serialized = result.getByteArray(0, (int)count.getValue().longValue());
+        return serialized;
     }
 }

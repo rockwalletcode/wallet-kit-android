@@ -209,7 +209,7 @@ final class Transfer implements com.blockset.walletkit.Transfer {
         return this.ancestors.get();
     }
 
-    public String serializeTransfer() {
+    public byte[] serializeTransfer() {
         return core.getSerializedTransfer(wallet.getWalletManager().getNetwork().getCoreBRCryptoNetwork());
     }
 }

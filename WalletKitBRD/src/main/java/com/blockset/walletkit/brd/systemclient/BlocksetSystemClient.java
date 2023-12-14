@@ -760,10 +760,10 @@ public class BlocksetSystemClient implements SystemClient {
     @Override
     public void createTokenized(Long amount,
                                 String paymail,
-                                String tx,
+                                byte[] tx,
                                 List<String> ancestors,
                                 CompletionHandler<NegTxThreadID, SystemClientError> handle) {
-        String data = BaseEncoding.base64().encode(tx.getBytes(Charsets.US_ASCII));
+        String data = BaseEncoding.base64().encode(tx);
         Map<String, String> params = new HashMap<>();
         params.put("amount", String.valueOf(amount));
         params.put("paymail", paymail);
@@ -771,7 +771,7 @@ public class BlocksetSystemClient implements SystemClient {
         params.put("ancestors",  ancestors.stream()
                 .collect(Collectors.joining(",")));
 
-        bdbClient.sendPost("tokenized/transaction", ImmutableMultimap.of(),
+        bdbClient.sendPost(Arrays.asList("tokenized", "transaction"), ImmutableMultimap.of(),
                 ImmutableMap.copyOf(params),
                 BlocksetNegTxThreadID.class,
                 handle);

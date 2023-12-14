@@ -16,10 +16,10 @@ import com.google.common.primitives.UnsignedLong;
 import java.util.Objects;
 
 /* package */
-class NetworkFee implements com.blockset.walletkit.NetworkFee {
+public class NetworkFee implements com.blockset.walletkit.NetworkFee {
 
     /* package */
-    static NetworkFee create(UnsignedLong timeIntervalInMilliseconds,
+    public static NetworkFee create(UnsignedLong timeIntervalInMilliseconds,
                              Amount pricePerCostFactor) {
         return NetworkFee.create(
                 WKNetworkFee.create(
