@@ -764,12 +764,11 @@ public class BlocksetSystemClient implements SystemClient {
                                 List<String> ancestors,
                                 CompletionHandler<NegTxThreadID, SystemClientError> handle) {
         String data = BaseEncoding.base64().encode(tx);
-        Map<String, String> params = new HashMap<>();
-        params.put("amount", String.valueOf(amount));
-        params.put("paymail", paymail);
-        params.put("transaction", data);
-        params.put("ancestors",  ancestors.stream()
-                .collect(Collectors.joining(",")));
+        Map<String, Serializable> params = ImmutableMap.of(
+        "amount", String.valueOf(amount),
+        "paymail", paymail,
+        "transaction", data,
+        "ancestors", new ArrayList(ancestors));
 
         bdbClient.sendPost(Arrays.asList("tokenized", "transaction"), ImmutableMultimap.of(),
                 ImmutableMap.copyOf(params),
@@ -784,7 +783,15 @@ public class BlocksetSystemClient implements SystemClient {
 
         ImmutableListMultimap.Builder<String, String> paramsBuilder = ImmutableListMultimap.builder();
 
-        bdbClient.sendGetWithId("transactions", threadId, paramsBuilder.build(),
+        ObjectCoder coder = ObjectCoder.createObjectCoderWithFailOnUnknownProperties();
+        String tmpBaseUrl = this.bdbBaseURL;
+        int index = tmpBaseUrl.lastIndexOf("/");
+        if(index != -1){
+            tmpBaseUrl = tmpBaseUrl.substring(0, index);
+        }
+        BdbApiClient tmpBdbClient = new BdbApiClient(this.client, tmpBaseUrl, this.bdbDataTask, coder);
+
+        tmpBdbClient.sendGetWithId(Arrays.asList("paymail", "transactions", "signable"), threadId, paramsBuilder.build(),
                 BlocksetUnSigTokenizedTx.class, handle);
 
     }

@@ -184,6 +184,7 @@ final class Wallet implements com.blockset.walletkit.Wallet {
             System system = walletManager.getSystem();
             Optional<Double> am = coreAmount.getDouble(coreAmount.getUnit());
             final String[] negTx = new String[1];
+            String threadID[] = new String[1];
             final boolean[] gotRes = {false};
             // send transaction for negotiation and then try to retrieve it.
             system.getSystemClient().createTokenized(am.get().longValue(),
@@ -197,23 +198,9 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                          */
                         @Override
                         public void handleData(SystemClient.NegTxThreadID data) {
-                            String threadID = data.getID();
+                            threadID[0] = data.getID();
                             Log.log(Level.INFO, String.format("createTokenized: succeeded %s", threadID));
-                            system.getSystemClient().getUnsignedTokenized(threadID,
-                                    new CompletionHandler<SystemClient.UnSigTokenizedTx, SystemClientError>() {
-                                        @Override
-                                        public void handleData(SystemClient.UnSigTokenizedTx data) {
-                                            Log.log(Level.INFO, String.format("getting negotiated transaction: succeeded %s", data.getTransaction()));
-                                            negTx[0] = data.getTransaction();
-                                            gotRes[0] = true;
-                                        }
-
-                                        @Override
-                                        public void handleError(SystemClientError error) {
-                                            Log.log(Level.INFO, String.format("getting negotiated transaction: failed %s", error));
-                                            gotRes[0] = true;
-                                        }
-                                    });
+                            gotRes[0] = true;
                         }
 
                         /**
@@ -233,6 +220,34 @@ final class Wallet implements com.blockset.walletkit.Wallet {
                 } catch (InterruptedException e) {
                 }
             }
+
+            if (!threadID[0].isEmpty()) {
+                gotRes[0]=false;
+                system.getSystemClient().getUnsignedTokenized(threadID[0],
+                        new CompletionHandler<SystemClient.UnSigTokenizedTx, SystemClientError>() {
+                            @Override
+                            public void handleData(SystemClient.UnSigTokenizedTx data) {
+                                Log.log(Level.INFO, String.format("getting negotiated transaction: succeeded %s", data.getTransaction()));
+                                negTx[0] = data.getTransaction();
+                                gotRes[0] = true;
+                            }
+
+                            @Override
+                            public void handleError(SystemClientError error) {
+                                Log.log(Level.INFO, String.format("getting negotiated transaction: failed %s", error));
+                                gotRes[0] = true;
+                            }
+                        });
+            }
+            count = 10;
+            while (!gotRes[0] && count > 0) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                    count--;
+                } catch (InterruptedException e) {
+                }
+            }
+
             //if there is negotiated tx, we need to add input for network fee
             byte[] newTrasfer = BlocksetTransaction.asData(negTx[0]);
             transaction = core.updateTransfer(transaction.get().getCoreBRCryptoTransfer(),
