@@ -53,6 +53,8 @@ public interface Transfer {
 
     Optional<String> getExchangeId();
 
+    boolean getIsSweep();
+
     Optional<? extends TransferHash> getHash();
 
     Unit getUnit();
