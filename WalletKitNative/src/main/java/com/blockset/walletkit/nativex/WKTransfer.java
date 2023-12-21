@@ -72,6 +72,11 @@ public class WKTransfer extends PointerType {
         ).transform((s) -> s.getString(0, "UTF-8"));
     }
 
+    public SizeT getIsSweep() {
+        Pointer thisPtr = this.getPointer();
+        return WKNativeLibraryDirect.wkTransferGetIsSweep(thisPtr);
+    }
+
     public Optional<WKHash> getHash() {
         Pointer thisPtr = this.getPointer();
 

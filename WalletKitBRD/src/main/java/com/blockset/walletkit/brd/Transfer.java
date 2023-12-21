@@ -11,6 +11,7 @@ import com.blockset.walletkit.nativex.cleaner.ReferenceCleaner;
 import com.blockset.walletkit.nativex.WKTransfer;
 import com.blockset.walletkit.TransferDirection;
 import com.blockset.walletkit.TransferState;
+import com.blockset.walletkit.nativex.utility.SizeT;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -142,6 +143,10 @@ final class Transfer implements com.blockset.walletkit.Transfer {
         return core.getExchangeId();
     }
 
+    @Override
+    public boolean getIsSweep() {
+        return !core.getIsSweep().equals(new SizeT(0));
+    }
     @Override
     public Optional<TransferHash> getHash() {
         return core.getHash().transform(TransferHash::create);
