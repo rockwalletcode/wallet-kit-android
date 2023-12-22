@@ -252,7 +252,7 @@ final class Wallet implements com.blockset.walletkit.Wallet {
             byte[] newTrasfer = BlocksetTransaction.asData(negTx[0]);
             transaction = core.updateTransfer(transaction.get().getCoreBRCryptoTransfer(),
                     newTrasfer,
-                    new SizeT(newTrasfer.length))
+                    new SizeT(newTrasfer.length), threadID[0])
                     .transform(t -> Transfer.create(t, this, false));
         }
 

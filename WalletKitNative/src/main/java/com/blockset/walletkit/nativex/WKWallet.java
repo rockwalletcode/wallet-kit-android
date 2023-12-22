@@ -299,13 +299,14 @@ public class WKWallet extends PointerType {
         WKNativeLibraryDirect.wkWalletGive(thisPtr);
     }
 
-    public Optional<WKTransfer> updateTransfer(WKTransfer transfer, byte[] newTransfer, SizeT trSize){
+    public Optional<WKTransfer> updateTransfer(WKTransfer transfer, byte[] newTransfer, SizeT trSize, String threadID){
         Pointer thisPtr = this.getPointer();
         return Optional.fromNullable(
                 WKNativeLibraryIndirect.wkWalletUpdateTransfer(thisPtr,
                         transfer.getPointer(),
                         newTransfer,
-                        trSize)
+                        trSize,
+                        threadID)
         ).transform(WKTransfer::new);
     }
 }

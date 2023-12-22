@@ -205,11 +205,13 @@ public final class WKNativeLibraryIndirect {
     public static Pointer wkWalletUpdateTransfer(Pointer wallet,
                                                  Pointer wkTransfer,
                                                  byte[] newTransfer,
-                                                 SizeT trSize) {
+                                                 SizeT trSize,
+                                                 String threadID) {
         return INSTANCE.wkWalletUpdateTransfer(
                 wallet,
                 wkTransfer,
                 newTransfer,
+                threadID,
                 trSize);
     }
 
@@ -304,6 +306,7 @@ public final class WKNativeLibraryIndirect {
         Pointer wkWalletUpdateTransfer(Pointer wallet,
                                        Pointer wkTransfer,
                                        byte[] newTransfer,
+                                       String threadID,
                                        SizeT trSize);
     }
 }
