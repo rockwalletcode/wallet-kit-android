@@ -2,7 +2,7 @@
 {
   "blockset": {
     "baseURL": "https://api.dev.rockwallet.net",
-    "token":  "CLIENT_TOKEN"
+    "token":  "CLIENT_ACCESS_TOKEN"
   },
 
   "accounts": [
