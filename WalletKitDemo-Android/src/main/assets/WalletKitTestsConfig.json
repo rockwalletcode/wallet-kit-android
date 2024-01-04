@@ -1,21 +1,14 @@
 
 {
   "blockset": {
-    "baseURL": "https://api.dev.rockwallet.net/blocksatoshi/blocksatoshi",
-    "token":  "n4t4ftn0ihm42ce88p5mie82ijrf88lkfskqrr5e"
+    "baseURL": "https://api.dev.rockwallet.net",
+    "token":  "CLIENT_TOKEN"
   },
 
   "accounts": [
-    {
-      "identifier": "trophy",
-      "paperKey":  "trophy sunset range help cliff poverty tool sign rotate upon vibrant brisk",
-      "timestamp": "2023-08-01",
-      "network":  "mainnet",
-      "content":  "BSV, BTC, BCH, ETH"
-    },
           {
-            "identifier": "install",
-            "paperKey":   "install curve point dutch ethics track attack capable cloth swap lab salon",
+            "identifier": "ginger",
+            "paperKey":   "ginger settle marine tissue robot crane night number ramp coast roast critic",
             "timestamp":  "2023-08-01",
             "network":    "mainnet",
             "content":    "BTC, BSV, BCH, ETH"
